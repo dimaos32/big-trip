@@ -14,14 +14,16 @@ export default class EventsPresenter {
     render(content, itemElement.getElement());
   };
 
-  init = (eventsContainer) => {
+  init = (eventsContainer, eventsModel) => {
     this.eventsContainer = eventsContainer;
-
-    for (let i = 0; i < 3; i++) {
-      this.renderEventsItem(new EventView());
-    }
+    this.eventsModel = eventsModel;
+    this.events = [...this.eventsModel.getEvents()];
 
     render(this.eventsComponent, this.eventsContainer);
     this.renderEventsItem(new EventEditFormView(), RenderPosition.AFTERBEGIN);
+
+    for (let i = 0; i < this.events.length; i++) {
+      this.renderEventsItem(new EventView(this.events[i]));
+    }
   };
 }
