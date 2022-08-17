@@ -13,6 +13,8 @@ const getRandomInteger = (a = 0, b = 1) => {
 const humanizeEventDate = (dueDate) => dayjs(dueDate).format('D MMMM');
 const humanizeEventtime = (dueDate) => dayjs(dueDate).format('HH:mm');
 
+const humanizeDateAndTime = (dueDate) => dayjs(dueDate).format('DD/MM/YY HH:mm');
+
 const getDurationInDays = (dateFrom, dateTo) =>
   dayjs(dateFrom).diff(dayjs(dateTo), 'day');
 const getDurationInHours = (dateFrom, dateTo) =>
@@ -36,4 +38,4 @@ const getTimeDuration = (dateTo, dateFrom) => {
   return `${shownDays}${shownHours}${shownMinutes}`;
 };
 
-export { getRandomInteger, humanizeEventDate, humanizeEventtime, getTimeDuration };
+export { getRandomInteger, humanizeEventDate, humanizeEventtime, humanizeDateAndTime, getTimeDuration };
