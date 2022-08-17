@@ -1,21 +1,20 @@
 import { createElement } from '../render';
 import { humanizeEventDate, humanizeEventtime, getTimeDuration } from '../utils';
-import { offers as selectedOffers, destinations } from '../mock/events';
 
-const createEventTemplate = (event) => {
+const createEventTemplate = (event, offersData, destinationsData) => {
   const { basePrice, dateFrom, dateTo, destination, isFavorite, offers, type } = event;
 
   const humanizedDateFrom = humanizeEventDate(dateFrom);
   const humanizedTimeFrom = humanizeEventtime(dateFrom);
   const humanizedTimeTo = humanizeEventtime(dateTo);
 
-  const name = destinations.find((el) => (el.id = destination)).name;
+  const name = destinationsData.find((el) => (el.id === destination)).name;
 
   const favoriteBtnClass = `event__favorite-btn${isFavorite ? ' event__favorite-btn--active' : ''}`;
 
   const generateSelectedOffersListMarkup = (data) => {
     const itemsMarkup = data.reduce((acc, offer) => {
-      const selectedOffer = selectedOffers.find((el) => (el.id = offer));
+      const selectedOffer = offersData.find((el) => (el.id === offer));
       const { title, price } = selectedOffer;
 
       return (`
@@ -69,12 +68,14 @@ const createEventTemplate = (event) => {
 };
 
 export default class EventView {
-  constructor(event) {
+  constructor(event, offers, destinations) {
     this.event = event;
+    this.offers = offers;
+    this.destinations = destinations;
   }
 
   getTemplate() {
-    return createEventTemplate(this.event);
+    return createEventTemplate(this.event, this.offers, this.destinations);
   }
 
   getElement() {

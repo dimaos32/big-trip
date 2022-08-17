@@ -13,14 +13,17 @@ const getRandomInteger = (a = 0, b = 1) => {
 const humanizeEventDate = (dueDate) => dayjs(dueDate).format('D MMMM');
 const humanizeEventtime = (dueDate) => dayjs(dueDate).format('HH:mm');
 
-const durationInDays = (dateFrom, dateTo) => dayjs(dateFrom).diff(dayjs(dateTo), 'day');
-const durationInHours = (dateFrom, dateTo) => dayjs(dateFrom).diff(dayjs(dateTo), 'hour');
-const durationInMinutes = (dateFrom, dateTo) => dayjs(dateFrom).diff(dayjs(dateTo), 'minute');
+const getDurationInDays = (dateFrom, dateTo) =>
+  dayjs(dateFrom).diff(dayjs(dateTo), 'day');
+const getDurationInHours = (dateFrom, dateTo) =>
+  dayjs(dateFrom).diff(dayjs(dateTo), 'hour');
+const fetDurationInMinutes = (dateFrom, dateTo) =>
+  dayjs(dateFrom).diff(dayjs(dateTo), 'minute');
 
 const getTimeDuration = (dateTo, dateFrom) => {
-  const days = `${durationInDays(dateTo, dateFrom)}`;
-  const hours = `${durationInHours(dateTo, dateFrom)}`;
-  const minutes = `${durationInMinutes(dateTo, dateFrom) + 1}`;
+  const days = `${getDurationInDays(dateTo, dateFrom)}`;
+  const hours = `${getDurationInHours(dateTo, dateFrom)}`;
+  const minutes = `${fetDurationInMinutes(dateTo, dateFrom) + 1}`;
 
   const shownDays = days === '0' ? '' : `${days}D `;
   const shownHours = hours === '0'

@@ -14,16 +14,20 @@ export default class EventsPresenter {
     render(content, itemElement.getElement());
   };
 
-  init = (eventsContainer, eventsModel) => {
+  init = (eventsContainer, eventsModel, offersModel, destinationsModel) => {
     this.eventsContainer = eventsContainer;
     this.eventsModel = eventsModel;
+    this.offersModel = offersModel;
+    this.destinationsModel = destinationsModel;
     this.events = [...this.eventsModel.getEvents()];
+    this.offers = [...this.offersModel.getOffers()];
+    this.destinations = [...this.destinationsModel.getDestinations()];
 
     render(this.eventsComponent, this.eventsContainer);
     this.renderEventsItem(new EventEditFormView(), RenderPosition.AFTERBEGIN);
 
-    for (let i = 0; i < this.events.length; i++) {
-      this.renderEventsItem(new EventView(this.events[i]));
-    }
+    this.events.forEach((event) => {
+      this.renderEventsItem(new EventView(event, this.offers, this.destinations));
+    });
   };
 }
