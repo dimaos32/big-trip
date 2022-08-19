@@ -7,7 +7,6 @@ import EventsPresenter from './presenter/events-presenter';
 import EventsModel from './model/events-model';
 import OffersModel from './model/offers-model';
 import DestinationsModel from './model/destinations-model';
-import OffersByTypeModel from './model/offers-by-type-model';
 
 const siteHeaderElement = document.querySelector('.page-header');
 const tripControlsElement = siteHeaderElement.querySelector('.trip-controls');
@@ -19,9 +18,8 @@ const eventsPresenter = new EventsPresenter();
 const eventsModel = new EventsModel();
 const offersModel = new OffersModel();
 const destinationsModel = new DestinationsModel();
-const offersByTypeModel = new OffersByTypeModel();
 
 render(new FilterView(), tripFilterElement);
 render(new SortView(), tripEventsElement);
 
-eventsPresenter.init(tripEventsElement, eventsModel, offersModel, destinationsModel, offersByTypeModel);
+eventsPresenter.init(tripEventsElement, eventsModel, offersModel, destinationsModel);
