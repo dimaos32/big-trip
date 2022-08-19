@@ -13,19 +13,20 @@ const createEventTemplate = (event, offersData, destinationsData) => {
   const favoriteBtnClass = `event__favorite-btn${isFavorite ? ' event__favorite-btn--active' : ''}`;
 
   const generateSelectedOffersListMarkup = (data) => {
-    const itemsMarkup = data.reduce((acc, offer) => {
-      const selectedOffer = offersData.find((el) => (el.id === offer));
-      const { title, price } = selectedOffer;
+    const itemsMarkup = data
+      .map((offer) => {
+        const selectedOffer = offersData.find((el) => (el.id === offer));
+        const { title, price } = selectedOffer;
 
-      return (`
-        ${acc}
-        <li class="event__offer">
-          <span class="event__offer-title">${title}</span>
-          &plus;&euro;&nbsp;
-          <span class="event__offer-price">${price}</span>
-        </li>
-      `);
-    }, '');
+        return (`
+          <li class="event__offer">
+            <span class="event__offer-title">${title}</span>
+            &plus;&euro;&nbsp;
+            <span class="event__offer-price">${price}</span>
+          </li>
+        `);
+      })
+      .join('');
 
     return (`
       <ul class="event__selected-offers">
