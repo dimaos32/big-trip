@@ -5,6 +5,6 @@ const offersByType = [
   },
 ];
 
-const getOffersByType = () => [...offersByType];
+const getOffersByType = () => offersByType;
 
 export { getOffersByType };

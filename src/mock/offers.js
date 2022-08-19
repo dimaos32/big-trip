@@ -16,6 +16,6 @@ const offers = [
   },
 ];
 
-const getOffers = () => [...offers];
+const getOffers = () => offers;
 
 export { getOffers };

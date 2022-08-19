@@ -20,6 +20,6 @@ const destinations = [
   },
 ];
 
-const getDestinations = () => [...destinations];
+const getDestinations = () => destinations;
 
 export { getDestinations };
