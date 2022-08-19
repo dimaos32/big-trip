@@ -14,23 +14,12 @@ const humanizeEventtime = (dueDate) => dayjs(dueDate).format('HH:mm');
 
 const humanizeDateAndTime = (dueDate) => dayjs(dueDate).format('DD/MM/YY HH:mm');
 
-const getTimeDuration = (dateTo, dateFrom) => {
-  const currentDuration = dayjs
-    .duration(dayjs(dateTo).diff(dayjs(dateFrom)))
-    .add(1, 'minute');
-  const days = currentDuration.days();
-  const hours = currentDuration.hours();
-  const minutes = currentDuration.minutes();
-
-  const shownDays = days === 0 ? '' : `${days}D `;
-  const shownHours = hours === 0
-    ? ''
-    : `${String(hours).padStart(2, '0')}H `;
-  const shownMinutes = minutes === 0
-    ? ''
-    : `${String(minutes).padStart(2, '0')}M`;
-
-  return `${shownDays}${shownHours}${shownMinutes}`;
-};
+const getTimeDuration = (dateTo, dateFrom) =>
+  dayjs
+    .duration(dayjs(dateTo).diff(dayjs(dateFrom).startOf('minute')))
+    .format('D[D] HH[H] mm[M]')
+    .replace(/^0D /, '')
+    .replace(/^00H /, '')
+    .replace(/^0/, '');
 
 export { getRandomInteger, humanizeEventDate, humanizeEventtime, humanizeDateAndTime, getTimeDuration };
