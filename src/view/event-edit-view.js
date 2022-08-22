@@ -142,7 +142,7 @@ const createEventEditFormTemplate = (event, offersData, destinationsData, offers
   );
 };
 
-export default class EventEditFormView {
+export default class EventEditView {
   #event = null;
   #offers = null;
   #destinations = null;

@@ -3,7 +3,7 @@ import { getOffersByType} from '../mock/offers-by-type';
 
 import EventsListView from '../view/events-list-view';
 import EventsItemView from '../view/events-item-view';
-import EventEditFormView from '../view/event-edit-form-view';
+import EventEditView from '../view/event-edit-view';
 
 import EventView from '../view/event-view';
 
@@ -28,6 +28,31 @@ export default class EventsPresenter {
     render(content, itemElement.element);
   };
 
+  #renderEvent = (event) => {
+    const eventComponent = new EventView(event, this.#offers, this.#destinations);
+    const eventEditComponent = new EventEditView(event, this.#offers, this.#destinations, offersByType);
+    const eventEditBtn = eventComponent.element.querySelector('.event__rollup-btn');
+
+    const activateEditEvent = () => {
+      eventComponent.element.parentNode.replaceChild(eventEditComponent.element, eventComponent.element);
+    };
+
+    const deactivateEditEvent = () => {
+      eventEditComponent.element.parentNode.replaceChild(eventComponent.element, eventEditComponent.element);
+    };
+
+    eventEditBtn.addEventListener('click', () => {
+      activateEditEvent();
+    });
+
+    eventEditComponent.element.addEventListener('submit', (evt) => {
+      evt.preventDefault();
+      deactivateEditEvent();
+    });
+
+    this.renderEventsItem(eventComponent);
+  };
+
   init = (eventsContainer, eventsModel, offersModel, destinationsModel) => {
     this.#eventsContainer = eventsContainer;
     this.#eventsModel = eventsModel;
@@ -38,10 +63,10 @@ export default class EventsPresenter {
     this.#destinations = [...this.#destinationsModel.destinations];
 
     render(this.#eventsComponent, this.#eventsContainer);
-    this.renderEventsItem(new EventEditFormView(this.#events[0], this.#offers, this.#destinations, offersByType), RenderPosition.AFTERBEGIN);
+    // this.renderEventsItem(new EventEditFormView(this.#events[0], this.#offers, this.#destinations, offersByType), RenderPosition.AFTERBEGIN);
 
     this.#events.forEach((event) => {
-      this.renderEventsItem(new EventView(event, this.#offers, this.#destinations));
+      this.#renderEvent(event);
     });
   };
 }
