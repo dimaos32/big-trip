@@ -22,4 +22,6 @@ const getTimeDuration = (dateTo, dateFrom) =>
     .replace(/^00H /, '')
     .replace(/^0/, '');
 
-export { getRandomInteger, humanizeEventDate, humanizeEventtime, humanizeDateAndTime, getTimeDuration };
+const isEscEvent = (evt) => evt.key === 'Escape' || evt.key === 'Esc';
+
+export { getRandomInteger, humanizeEventDate, humanizeEventtime, humanizeDateAndTime, getTimeDuration, isEscEvent };

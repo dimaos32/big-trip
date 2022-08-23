@@ -69,25 +69,31 @@ const createEventTemplate = (event, offersData, destinationsData) => {
 };
 
 export default class EventView {
+  #event = null;
+  #offers = null;
+  #destinations = null;
+
+  #element = null;
+
   constructor(event, offers, destinations) {
-    this.event = event;
-    this.offers = offers;
-    this.destinations = destinations;
+    this.#event = event;
+    this.#offers = offers;
+    this.#destinations = destinations;
   }
 
-  getTemplate() {
-    return createEventTemplate(this.event, this.offers, this.destinations);
+  get template() {
+    return createEventTemplate(this.#event, this.#offers, this.#destinations);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
     }
 
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }
