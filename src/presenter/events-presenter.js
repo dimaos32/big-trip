@@ -1,4 +1,5 @@
 import { RenderPosition, render } from '../render';
+import { isEscEvent } from '../utils';
 import { getOffersByType} from '../mock/offers-by-type';
 
 import EventsListView from '../view/events-list-view';
@@ -32,6 +33,7 @@ export default class EventsPresenter {
     const eventComponent = new EventView(event, this.#offers, this.#destinations);
     const eventEditComponent = new EventEditView(event, this.#offers, this.#destinations, offersByType);
     const eventEditBtn = eventComponent.element.querySelector('.event__rollup-btn');
+    const cancelEditBtn = eventEditComponent.element.querySelector('.event__reset-btn');
 
     const activateEditEvent = () => {
       eventComponent.element.parentNode.replaceChild(eventEditComponent.element, eventComponent.element);
@@ -41,13 +43,28 @@ export default class EventsPresenter {
       eventEditComponent.element.parentNode.replaceChild(eventComponent.element, eventEditComponent.element);
     };
 
+    const onEscKeyDown = (evt) => {
+      if (isEscEvent(evt)) {
+        evt.preventDefault();
+        deactivateEditEvent();
+        document.removeEventListener('keydown', onEscKeyDown);
+      }
+    };
+
     eventEditBtn.addEventListener('click', () => {
       activateEditEvent();
+      document.addEventListener('keydown', onEscKeyDown);
+    });
+
+    cancelEditBtn.addEventListener('click', () => {
+      deactivateEditEvent();
+      document.removeEventListener('keydown', onEscKeyDown);
     });
 
     eventEditComponent.element.addEventListener('submit', (evt) => {
       evt.preventDefault();
       deactivateEditEvent();
+      document.removeEventListener('keydown', onEscKeyDown);
     });
 
     this.renderEventsItem(eventComponent);
