@@ -2,11 +2,12 @@ import { RenderPosition, render } from '../render';
 import { isEscEvent } from '../utils';
 import { getOffersByType} from '../mock/offers-by-type';
 
+import SortView from '../view/sort-view';
 import EventsListView from '../view/events-list-view';
 import EventsItemView from '../view/events-item-view';
 import EventEditView from '../view/event-edit-view';
-
 import EventView from '../view/event-view';
+import noEventsView from '../view/no-events-view';
 
 const offersByType = getOffersByType();
 
@@ -22,6 +23,7 @@ export default class EventsPresenter {
   #destinations = null;
 
   #eventsComponent = new EventsListView();
+  #noEventsComponent = new noEventsView();
 
   renderEventsItem = (content, place = RenderPosition.BEFOREEND) => {
     const itemElement = new EventsItemView();
@@ -77,15 +79,19 @@ export default class EventsPresenter {
     this.#eventsModel = eventsModel;
     this.#offersModel = offersModel;
     this.#destinationsModel = destinationsModel;
-    this.#events = [...this.#eventsModel.events];
+    this.#events = this.#eventsModel.events ? [...this.#eventsModel.events] : [];
     this.#offers = [...this.#offersModel.offers];
     this.#destinations = [...this.#destinationsModel.destinations];
 
-    render(this.#eventsComponent, this.#eventsContainer);
-    // this.renderEventsItem(new EventEditFormView(this.#events[0], this.#offers, this.#destinations, offersByType), RenderPosition.AFTERBEGIN);
+    if (this.#events.length) {
+      render(new SortView(), this.#eventsContainer);
+      render(this.#eventsComponent, this.#eventsContainer);
 
-    this.#events.forEach((event) => {
-      this.#renderEvent(event);
-    });
+      this.#events.forEach((event) => {
+        this.#renderEvent(event);
+      });
+    } else {
+      render(this.#noEventsComponent, this.#eventsContainer);
+    }
   };
 }
