@@ -43,13 +43,17 @@ export default class EventsPresenter {
       eventEditComponent.element.parentNode.replaceChild(eventComponent.element, eventEditComponent.element);
     };
 
-    const onEscKeyDown = (evt) => {
+    const cancelEditEvent = () => {
+      deactivateEditEvent();
+      document.removeEventListener('keydown', onEscKeyDown);
+    };
+
+    function onEscKeyDown(evt) {
       if (isEscEvent(evt)) {
         evt.preventDefault();
-        deactivateEditEvent();
-        document.removeEventListener('keydown', onEscKeyDown);
+        cancelEditEvent();
       }
-    };
+    }
 
     eventEditBtn.addEventListener('click', () => {
       activateEditEvent();
@@ -57,14 +61,12 @@ export default class EventsPresenter {
     });
 
     cancelEditBtn.addEventListener('click', () => {
-      deactivateEditEvent();
-      document.removeEventListener('keydown', onEscKeyDown);
+      cancelEditEvent();
     });
 
     eventEditComponent.element.addEventListener('submit', (evt) => {
       evt.preventDefault();
-      deactivateEditEvent();
-      document.removeEventListener('keydown', onEscKeyDown);
+      cancelEditEvent();
     });
 
     this.renderEventsItem(eventComponent);
