@@ -83,15 +83,15 @@ export default class EventsPresenter {
     this.#offers = [...this.#offersModel.offers];
     this.#destinations = [...this.#destinationsModel.destinations];
 
-    if (this.#events.length) {
+    if (!this.#events.length) {
+      render(this.#noEventsComponent, this.#eventsContainer);
+    } else {
       render(new SortView(), this.#eventsContainer);
       render(this.#eventsComponent, this.#eventsContainer);
 
       this.#events.forEach((event) => {
         this.#renderEvent(event);
       });
-    } else {
-      render(this.#noEventsComponent, this.#eventsContainer);
     }
   };
 }
