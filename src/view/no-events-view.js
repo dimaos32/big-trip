@@ -1,7 +1,8 @@
 import { createElement } from '../render';
+import { Message } from '../const';
 
 const createNoEventsTemplate = () =>
-  '<p class="trip-events__msg">Click New Event to create your first point</p>';
+  `<p class="trip-events__msg">${Message.NO_EVENTS}</p>`;
 
 export default class EventView {
   #element = null;
