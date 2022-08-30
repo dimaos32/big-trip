@@ -1,6 +1,6 @@
-import { render } from '../framework/render';
+import { render, replace } from '../framework/render';
 
-import { isEscEvent } from '../utils';
+import { isEscEvent } from '../utils/common';
 import { getOffersByType} from '../mock/offers-by-type';
 
 import SortView from '../view/sort-view';
@@ -35,15 +35,13 @@ export default class EventsPresenter {
   #renderEvent = (event) => {
     const eventComponent = new EventView(event, this.#offers, this.#destinations);
     const eventEditComponent = new EventEditView(event, this.#offers, this.#destinations, offersByType);
-    const eventEditBtn = eventComponent.element.querySelector('.event__rollup-btn');
-    const cancelEditBtn = eventEditComponent.element.querySelector('.event__reset-btn');
 
     const activateEditEvent = () => {
-      eventComponent.element.parentNode.replaceChild(eventEditComponent.element, eventComponent.element);
+      replace(eventEditComponent, eventComponent);
     };
 
     const deactivateEditEvent = () => {
-      eventEditComponent.element.parentNode.replaceChild(eventComponent.element, eventEditComponent.element);
+      replace(eventComponent, eventEditComponent);
     };
 
     const cancelEditEvent = () => {
@@ -58,17 +56,16 @@ export default class EventsPresenter {
       }
     }
 
-    eventEditBtn.addEventListener('click', () => {
+    eventComponent.setEditClickHandler(() => {
       activateEditEvent();
       document.addEventListener('keydown', onEscKeyDown);
     });
 
-    cancelEditBtn.addEventListener('click', () => {
+    eventEditComponent.setCancelEditClickHandler(() => {
       cancelEditEvent();
     });
 
-    eventEditComponent.element.addEventListener('submit', (evt) => {
-      evt.preventDefault();
+    eventEditComponent.setSubmitHandler(() => {
       cancelEditEvent();
     });
 

@@ -1,6 +1,6 @@
 import AbstractView from '../framework/view/abstract-view';
 
-import { humanizeDateAndTime } from '../utils';
+import { humanizeDateAndTime } from '../utils/event';
 import { getEventTypes } from '../mock/event-types';
 
 const createEventEditFormTemplate = (event, offersData, destinationsData, offersByTypeData) => {
@@ -162,4 +162,26 @@ export default class EventEditView extends AbstractView {
   get template() {
     return createEventEditFormTemplate(this.#event, this.#offers, this.#destinations, this.#offersByType);
   }
+
+  setCancelEditClickHandler = (callback) => {
+    this._callback.click = callback;
+
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#clickHandler);
+  };
+
+  setSubmitHandler = (callback) => {
+    this._callback.submit = callback;
+
+    this.element.addEventListener('submit', this.#submitHandler);
+  };
+
+  #clickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.click();
+  };
+
+  #submitHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.submit();
+  };
 }
