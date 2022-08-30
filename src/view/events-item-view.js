@@ -1,23 +1,9 @@
-import { createElement } from '../render';
+import AbstractView from '../framework/view/abstract-view';
 
 const createEventsItemTemplate = () => '<li class="trip-events__item"></li>';
 
-export default class EventsItemView {
-  #element = null;
-
+export default class EventsItemView extends AbstractView {
   get template() {
     return createEventsItemTemplate();
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }
