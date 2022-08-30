@@ -1,4 +1,5 @@
-import { createElement } from '../render';
+import AbstractView from '../framework/view/abstract-view';
+
 import { humanizeEventDate, humanizeEventtime, getTimeDuration } from '../utils';
 
 const createEventTemplate = (event, offersData, destinationsData) => {
@@ -68,7 +69,7 @@ const createEventTemplate = (event, offersData, destinationsData) => {
   );
 };
 
-export default class EventView {
+export default class EventView extends AbstractView {
   #event = null;
   #offers = null;
   #destinations = null;
@@ -76,6 +77,7 @@ export default class EventView {
   #element = null;
 
   constructor(event, offers, destinations) {
+    super();
     this.#event = event;
     this.#offers = offers;
     this.#destinations = destinations;
@@ -83,17 +85,5 @@ export default class EventView {
 
   get template() {
     return createEventTemplate(this.#event, this.#offers, this.#destinations);
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

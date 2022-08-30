@@ -2,6 +2,6 @@ const eventTypes = [
   'taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant',
 ];
 
-const geteventTypes = () => eventTypes;
+const getEventTypes = () => eventTypes;
 
-export { geteventTypes };
+export { getEventTypes };

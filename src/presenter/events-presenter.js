@@ -1,4 +1,5 @@
-import { RenderPosition, render } from '../render';
+import { render } from '../framework/render';
+
 import { isEscEvent } from '../utils';
 import { getOffersByType} from '../mock/offers-by-type';
 
@@ -25,9 +26,9 @@ export default class EventsPresenter {
   #eventsComponent = new EventsListView();
   #noEventsComponent = new noEventsView();
 
-  renderEventsItem = (content, place = RenderPosition.BEFOREEND) => {
+  renderEventsItem = (content) => {
     const itemElement = new EventsItemView();
-    render(itemElement, this.#eventsComponent.element, place);
+    render(itemElement, this.#eventsComponent.element);
     render(content, itemElement.element);
   };
 
