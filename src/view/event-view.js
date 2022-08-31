@@ -1,5 +1,6 @@
-import { createElement } from '../render';
-import { humanizeEventDate, humanizeEventtime, getTimeDuration } from '../utils';
+import AbstractView from '../framework/view/abstract-view';
+
+import { humanizeEventDate, humanizeEventtime, getTimeDuration } from '../utils/event';
 
 const createEventTemplate = (event, offersData, destinationsData) => {
   const { basePrice, dateFrom, dateTo, destination, isFavorite, offers, type } = event;
@@ -68,7 +69,7 @@ const createEventTemplate = (event, offersData, destinationsData) => {
   );
 };
 
-export default class EventView {
+export default class EventView extends AbstractView {
   #event = null;
   #offers = null;
   #destinations = null;
@@ -76,6 +77,7 @@ export default class EventView {
   #element = null;
 
   constructor(event, offers, destinations) {
+    super();
     this.#event = event;
     this.#offers = offers;
     this.#destinations = destinations;
@@ -85,15 +87,14 @@ export default class EventView {
     return createEventTemplate(this.#event, this.#offers, this.#destinations);
   }
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
+  setEditClickHandler = (callback) => {
+    this._callback.click = callback;
 
-    return this.#element;
-  }
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#clickHandler);
+  };
 
-  removeElement() {
-    this.#element = null;
-  }
+  #clickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.click();
+  };
 }

@@ -1,5 +1,5 @@
 import { generateEvent } from '../mock/events';
-import { getRandomInteger } from '../utils';
+import { getRandomInteger } from '../utils/common';
 
 const generateEvents = () => {
   const key = getRandomInteger(0, 3);

@@ -1,5 +1,6 @@
-import { RenderPosition, render } from '../render';
-import { isEscEvent } from '../utils';
+import { render, replace } from '../framework/render';
+
+import { isEscEvent } from '../utils/common';
 import { getOffersByType} from '../mock/offers-by-type';
 
 import SortView from '../view/sort-view';
@@ -25,24 +26,22 @@ export default class EventsPresenter {
   #eventsComponent = new EventsListView();
   #noEventsComponent = new noEventsView();
 
-  renderEventsItem = (content, place = RenderPosition.BEFOREEND) => {
+  renderEventsItem = (content) => {
     const itemElement = new EventsItemView();
-    render(itemElement, this.#eventsComponent.element, place);
+    render(itemElement, this.#eventsComponent.element);
     render(content, itemElement.element);
   };
 
   #renderEvent = (event) => {
     const eventComponent = new EventView(event, this.#offers, this.#destinations);
     const eventEditComponent = new EventEditView(event, this.#offers, this.#destinations, offersByType);
-    const eventEditBtn = eventComponent.element.querySelector('.event__rollup-btn');
-    const cancelEditBtn = eventEditComponent.element.querySelector('.event__reset-btn');
 
     const activateEditEvent = () => {
-      eventComponent.element.parentNode.replaceChild(eventEditComponent.element, eventComponent.element);
+      replace(eventEditComponent, eventComponent);
     };
 
     const deactivateEditEvent = () => {
-      eventEditComponent.element.parentNode.replaceChild(eventComponent.element, eventEditComponent.element);
+      replace(eventComponent, eventEditComponent);
     };
 
     const cancelEditEvent = () => {
@@ -57,17 +56,16 @@ export default class EventsPresenter {
       }
     }
 
-    eventEditBtn.addEventListener('click', () => {
+    eventComponent.setEditClickHandler(() => {
       activateEditEvent();
       document.addEventListener('keydown', onEscKeyDown);
     });
 
-    cancelEditBtn.addEventListener('click', () => {
+    eventEditComponent.setCancelEditClickHandler(() => {
       cancelEditEvent();
     });
 
-    eventEditComponent.element.addEventListener('submit', (evt) => {
-      evt.preventDefault();
+    eventEditComponent.setSubmitHandler(() => {
       cancelEditEvent();
     });
 
@@ -83,15 +81,15 @@ export default class EventsPresenter {
     this.#offers = [...this.#offersModel.offers];
     this.#destinations = [...this.#destinationsModel.destinations];
 
-    if (this.#events.length) {
+    if (!this.#events.length) {
+      render(this.#noEventsComponent, this.#eventsContainer);
+    } else {
       render(new SortView(), this.#eventsContainer);
       render(this.#eventsComponent, this.#eventsContainer);
 
       this.#events.forEach((event) => {
         this.#renderEvent(event);
       });
-    } else {
-      render(this.#noEventsComponent, this.#eventsContainer);
     }
   };
 }

@@ -1,6 +1,7 @@
-import { createElement } from '../render';
-import { humanizeDateAndTime } from '../utils';
-import { geteventTypes } from '../mock/event-types';
+import AbstractView from '../framework/view/abstract-view';
+
+import { humanizeDateAndTime } from '../utils/event';
+import { getEventTypes } from '../mock/event-types';
 
 const createEventEditFormTemplate = (event, offersData, destinationsData, offersByTypeData) => {
   const { basePrice, dateFrom, dateTo, destination, offers, type } = event;
@@ -9,7 +10,7 @@ const createEventEditFormTemplate = (event, offersData, destinationsData, offers
   const { offers: currentOfferIds } = offersByTypeData.find((offer) => offer.type === event.type);
 
   const currentOffers = offersData.filter((offer) => currentOfferIds.includes(offer.id));
-  const eventTypes = geteventTypes();
+  const eventTypes = getEventTypes();
 
   const generateOffersMarkup = (data) => {
     const itemsMarkup = data
@@ -142,7 +143,7 @@ const createEventEditFormTemplate = (event, offersData, destinationsData, offers
   );
 };
 
-export default class EventEditView {
+export default class EventEditView extends AbstractView {
   #event = null;
   #offers = null;
   #destinations = null;
@@ -151,6 +152,7 @@ export default class EventEditView {
   #element = null;
 
   constructor(event, offers, destinations, offersByType) {
+    super();
     this.#event = event;
     this.#offers = offers;
     this.#destinations = destinations;
@@ -161,15 +163,25 @@ export default class EventEditView {
     return createEventEditFormTemplate(this.#event, this.#offers, this.#destinations, this.#offersByType);
   }
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
+  setCancelEditClickHandler = (callback) => {
+    this._callback.click = callback;
 
-    return this.#element;
-  }
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#clickHandler);
+  };
 
-  removeElement() {
-    this.#element = null;
-  }
+  setSubmitHandler = (callback) => {
+    this._callback.submit = callback;
+
+    this.element.addEventListener('submit', this.#submitHandler);
+  };
+
+  #clickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.click();
+  };
+
+  #submitHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.submit();
+  };
 }
