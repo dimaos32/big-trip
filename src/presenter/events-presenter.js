@@ -83,13 +83,14 @@ export default class EventsPresenter {
 
     if (!this.#events.length) {
       render(this.#noEventsComponent, this.#eventsContainer);
-    } else {
-      render(new SortView(), this.#eventsContainer);
-      render(this.#eventsComponent, this.#eventsContainer);
-
-      this.#events.forEach((event) => {
-        this.#renderEvent(event);
-      });
+      return;
     }
+
+    render(new SortView(), this.#eventsContainer);
+    render(this.#eventsComponent, this.#eventsContainer);
+
+    this.#events.forEach((event) => {
+      this.#renderEvent(event);
+    });
   };
 }
