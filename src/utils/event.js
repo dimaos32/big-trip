@@ -20,8 +20,8 @@ const humanizeEventtime = (dueDate) => dayjs(dueDate).format('HH:mm');
 
 const humanizeDateAndTime = (dueDate) => dayjs(dueDate).format('DD/MM/YY HH:mm');
 
-const isFutureEvent = (dueDate) => dueDate && dayjs().isBefore(dueDate, 'Day');
-const isPastEvent = (dueDate) => dueDate && dayjs().isAfter(dueDate, 'Day');
+const isNotStartedEvent = (dueDate) => dueDate && dayjs().isBefore(dueDate, 'Day');
+const isEndedEvent = (dueDate) => dueDate && dayjs().isAfter(dueDate, 'Day');
 
 const getTimeDuration = (dateTo, dateFrom) =>
   dayjs
@@ -42,6 +42,6 @@ const generatePeriod = () => {
 };
 
 export {
-  humanizeEventDate, humanizeEventtime, humanizeDateAndTime, isFutureEvent, isPastEvent,
+  humanizeEventDate, humanizeEventtime, humanizeDateAndTime, isNotStartedEvent, isEndedEvent,
   getTimeDuration, generatePeriod,
 };

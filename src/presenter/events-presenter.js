@@ -2,6 +2,7 @@ import { render, replace } from '../framework/render';
 
 import { isEscEvent } from '../utils/common';
 import { getOffersByType} from '../mock/offers-by-type';
+import { generateFilter } from '../mock/filter.js';
 
 import FilterView from '../view/filter-view';
 import SortView from '../view/sort-view';
@@ -24,6 +25,7 @@ export default class EventsPresenter {
   #events = null;
   #offers = null;
   #destinations = null;
+  #filter = null;
 
   #eventsComponent = new EventsListView();
   #noEventsComponent = new noEventsView();
@@ -83,8 +85,9 @@ export default class EventsPresenter {
     this.#events = this.#eventsModel.events ? [...this.#eventsModel.events] : [];
     this.#offers = [...this.#offersModel.offers];
     this.#destinations = [...this.#destinationsModel.destinations];
+    this.#filter = generateFilter(this.#events);
 
-    render(new FilterView(this.#events), this.#filterContainer);
+    render(new FilterView(this.#filter), this.#filterContainer);
 
     if (!this.#events.length) {
       render(this.#noEventsComponent, this.#eventsContainer);

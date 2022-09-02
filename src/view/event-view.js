@@ -19,21 +19,21 @@ const createEventTemplate = (event, offersData, destinationsData) => {
         const selectedOffer = offersData.find((el) => (el.id === offer));
         const { title, price } = selectedOffer;
 
-        return (`
-          <li class="event__offer">
+        return (
+          `<li class="event__offer">
             <span class="event__offer-title">${title}</span>
             &plus;&euro;&nbsp;
             <span class="event__offer-price">${price}</span>
-          </li>
-        `);
+          </li>`
+        );
       })
       .join('');
 
-    return (`
-      <ul class="event__selected-offers">
+    return (
+      `<ul class="event__selected-offers">
         ${itemsMarkup}
-      </ul>
-    `);
+      </ul>`
+    );
   };
 
   return (

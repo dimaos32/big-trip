@@ -1,10 +1,10 @@
 import { FilterType } from '../const';
-import { isFutureEvent, isPastEvent } from './event';
+import { isNotStartedEvent, isEndedEvent } from './event';
 
 const filter = {
   [FilterType.EVERYTHING]: (events) => events,
-  [FilterType.FUTURE]: (events) => events.filter((event) => isFutureEvent(event.dateFrom)),
-  [FilterType.PAST]: (events) => events.filter((event) => isPastEvent(event.dateTo)),
+  [FilterType.FUTURE]: (events) => events.filter((event) => isNotStartedEvent(event.dateFrom)),
+  [FilterType.PAST]: (events) => events.filter((event) => isEndedEvent(event.dateTo)),
 };
 
 export { filter };

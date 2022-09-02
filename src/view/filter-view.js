@@ -1,32 +1,40 @@
 import AbstractView from '../framework/view/abstract-view';
-import { filter } from '../utils/filter';
 
-const createFilterItemTemplate = (events, [filterName, filterTasks]) => (
+const createFilterItemTemplate = ({name, count}) => (
   `<div class="trip-filters__filter">
-    <input id="filter-${filterName}" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value=${filterName} ${filterName === 'everything' && events.length ? 'checked' : ''} ${!filterTasks(events).length ? 'disabled' : ''} = >
-    <label class="trip-filters__filter-label" for="filter-${filterName}">${filterName}</label>
+    <input
+      id="filter-${name}"
+      class="trip-filters__filter-input visually-hidden"
+      type="radio" name="trip-filter"
+      value=${name}
+      ${name === 'everything' && count ? 'checked' : ''}
+      ${!count ? 'disabled' : ''}
+    >
+    <label class="trip-filters__filter-label" for="filter-${name}">${name}</label>
   </div>`
 );
 
-const createFilterTemplate = (events) => {
-  const itemsMarkup = Object.entries(filter)
-    .map((el) => createFilterItemTemplate(events, el))
+const createFilterTemplate = (filter) => {
+  const itemsMarkup = filter
+    .map((el) => createFilterItemTemplate(el))
     .join('');
 
-  return `<form class="trip-filters" action="#" method="get">
-    ${itemsMarkup}
-  </form>`;
+  return (
+    `<form class="trip-filters" action="#" method="get">
+      ${itemsMarkup}
+    </form>`
+  );
 };
 
 export default class FilterView extends AbstractView {
-  #events = null;
+  #filter = null;
 
-  constructor(events) {
+  constructor(filter) {
     super();
-    this.#events = events;
+    this.#filter = filter;
   }
 
   get template() {
-    return createFilterTemplate(this.#events);
+    return createFilterTemplate(this.#filter);
   }
 }
