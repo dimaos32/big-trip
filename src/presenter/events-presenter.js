@@ -3,6 +3,7 @@ import { render, replace } from '../framework/render';
 import { isEscEvent } from '../utils/common';
 import { getOffersByType} from '../mock/offers-by-type';
 
+import FilterView from '../view/filter-view';
 import SortView from '../view/sort-view';
 import EventsListView from '../view/events-list-view';
 import EventsItemView from '../view/events-item-view';
@@ -13,6 +14,7 @@ import noEventsView from '../view/no-events-view';
 const offersByType = getOffersByType();
 
 export default class EventsPresenter {
+  #filterContainer = null;
   #eventsContainer = null;
 
   #eventsModel = null;
@@ -72,7 +74,8 @@ export default class EventsPresenter {
     this.renderEventsItem(eventComponent);
   };
 
-  init = (eventsContainer, eventsModel, offersModel, destinationsModel) => {
+  init = (filterContainer, eventsContainer, eventsModel, offersModel, destinationsModel) => {
+    this.#filterContainer = filterContainer;
     this.#eventsContainer = eventsContainer;
     this.#eventsModel = eventsModel;
     this.#offersModel = offersModel;
@@ -81,16 +84,17 @@ export default class EventsPresenter {
     this.#offers = [...this.#offersModel.offers];
     this.#destinations = [...this.#destinationsModel.destinations];
 
+    render(new FilterView(this.#events), this.#filterContainer);
+
     if (!this.#events.length) {
       render(this.#noEventsComponent, this.#eventsContainer);
-      return;
+    } else {
+      render(new SortView(), this.#eventsContainer);
+      render(this.#eventsComponent, this.#eventsContainer);
+
+      this.#events.forEach((event) => {
+        this.#renderEvent(event);
+      });
     }
-
-    render(new SortView(), this.#eventsContainer);
-    render(this.#eventsComponent, this.#eventsContainer);
-
-    this.#events.forEach((event) => {
-      this.#renderEvent(event);
-    });
   };
 }

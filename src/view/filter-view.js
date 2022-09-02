@@ -1,28 +1,32 @@
 import AbstractView from '../framework/view/abstract-view';
+import { filter } from '../utils/filter';
 
-const createFilterTemplate = () => (
-  `<form class="trip-filters" action="#" method="get">
-    <div class="trip-filters__filter">
-      <input id="filter-everything" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="everything">
-      <label class="trip-filters__filter-label" for="filter-everything">Everything</label>
-    </div>
-
-    <div class="trip-filters__filter">
-      <input id="filter-future" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="future">
-      <label class="trip-filters__filter-label" for="filter-future">Future</label>
-    </div>
-
-    <div class="trip-filters__filter">
-      <input id="filter-past" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="past" checked>
-      <label class="trip-filters__filter-label" for="filter-past">Past</label>
-    </div>
-
-    <button class="visually-hidden" type="submit">Accept filter</button>
-  </form>`
+const createFilterItemTemplate = (events, [filterName, filterTasks]) => (
+  `<div class="trip-filters__filter">
+    <input id="filter-${filterName}" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value=${filterName} ${filterName === 'everything' && events.length ? 'checked' : ''} ${!filterTasks(events).length ? 'disabled' : ''} = >
+    <label class="trip-filters__filter-label" for="filter-${filterName}">${filterName}</label>
+  </div>`
 );
 
-export default class FilterVieww extends AbstractView {
+const createFilterTemplate = (events) => {
+  const itemsMarkup = Object.entries(filter)
+    .map((el) => createFilterItemTemplate(events, el))
+    .join('');
+
+  return `<form class="trip-filters" action="#" method="get">
+    ${itemsMarkup}
+  </form>`;
+};
+
+export default class FilterView extends AbstractView {
+  #events = null;
+
+  constructor(events) {
+    super();
+    this.#events = events;
+  }
+
   get template() {
-    return createFilterTemplate();
+    return createFilterTemplate(this.#events);
   }
 }

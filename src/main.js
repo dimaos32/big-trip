@@ -1,7 +1,3 @@
-import { render } from './framework/render';
-
-import FilterView from './view/filter-view';
-
 import EventsPresenter from './presenter/events-presenter';
 import EventsModel from './model/events-model';
 import OffersModel from './model/offers-model';
@@ -18,6 +14,4 @@ const eventsModel = new EventsModel();
 const offersModel = new OffersModel();
 const destinationsModel = new DestinationsModel();
 
-render(new FilterView(), tripFilterElement);
-
-eventsPresenter.init(tripEventsElement, eventsModel, offersModel, destinationsModel);
+eventsPresenter.init(tripFilterElement, tripEventsElement, eventsModel, offersModel, destinationsModel);
