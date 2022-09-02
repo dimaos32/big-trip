@@ -165,13 +165,11 @@ export default class EventEditView extends AbstractView {
 
   setCancelEditClickHandler = (callback) => {
     this._callback.click = callback;
-
     this.element.querySelector('.event__reset-btn').addEventListener('click', this.#clickHandler);
   };
 
   setSubmitHandler = (callback) => {
     this._callback.submit = callback;
-
     this.element.addEventListener('submit', this.#submitHandler);
   };
 
