@@ -7,7 +7,6 @@ import { generateFilter } from '../mock/filter.js';
 import FilterView from '../view/filter-view';
 import SortView from '../view/sort-view';
 import EventsListView from '../view/events-list-view';
-import EventsItemView from '../view/events-item-view';
 import EventEditView from '../view/event-edit-view';
 import EventView from '../view/event-view';
 import noEventsView from '../view/no-events-view';
@@ -29,12 +28,6 @@ export default class EventsPresenter {
 
   #eventsComponent = new EventsListView();
   #noEventsComponent = new noEventsView();
-
-  renderEventsItem = (content) => {
-    const itemElement = new EventsItemView();
-    render(itemElement, this.#eventsComponent.element);
-    render(content, itemElement.element);
-  };
 
   #renderEvent = (event) => {
     const eventComponent = new EventView(event, this.#offers, this.#destinations);
@@ -73,7 +66,7 @@ export default class EventsPresenter {
       cancelEditEvent();
     });
 
-    this.renderEventsItem(eventComponent);
+    render(eventComponent, this.#eventsComponent.element);
   };
 
   init = (filterContainer, eventsContainer, eventsModel, offersModel, destinationsModel) => {
