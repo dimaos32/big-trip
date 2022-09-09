@@ -29,6 +29,30 @@ export default class EventsPresenter {
   #eventsComponent = new EventsListView();
   #noEventsComponent = new noEventsView();
 
+  init = (filterContainer, eventsContainer, eventsModel, offersModel, destinationsModel) => {
+    this.#filterContainer = filterContainer;
+    this.#eventsContainer = eventsContainer;
+    this.#eventsModel = eventsModel;
+    this.#offersModel = offersModel;
+    this.#destinationsModel = destinationsModel;
+    this.#events = this.#eventsModel.events ? [...this.#eventsModel.events] : [];
+    this.#offers = [...this.#offersModel.offers];
+    this.#destinations = [...this.#destinationsModel.destinations];
+    this.#filter = generateFilter(this.#events);
+
+    this.#renderFilter();
+
+    this.#renderEventsBoard();
+  };
+
+  #renderFilter = () => {
+    render(new FilterView(this.#filter), this.#filterContainer);
+  };
+
+  #renderSortBar = () => {
+    render(new SortView(), this.#eventsContainer);
+  };
+
   #renderEvent = (event) => {
     const eventComponent = new EventView(event, this.#offers, this.#destinations);
     const eventEditComponent = new EventEditView(event, this.#offers, this.#destinations, offersByType);
@@ -69,28 +93,24 @@ export default class EventsPresenter {
     render(eventComponent, this.#eventsComponent.element);
   };
 
-  init = (filterContainer, eventsContainer, eventsModel, offersModel, destinationsModel) => {
-    this.#filterContainer = filterContainer;
-    this.#eventsContainer = eventsContainer;
-    this.#eventsModel = eventsModel;
-    this.#offersModel = offersModel;
-    this.#destinationsModel = destinationsModel;
-    this.#events = this.#eventsModel.events ? [...this.#eventsModel.events] : [];
-    this.#offers = [...this.#offersModel.offers];
-    this.#destinations = [...this.#destinationsModel.destinations];
-    this.#filter = generateFilter(this.#events);
+  #renderEvents = () => {
+    render(this.#eventsComponent, this.#eventsContainer);
 
-    render(new FilterView(this.#filter), this.#filterContainer);
+    this.#events.forEach((event) => {
+      this.#renderEvent(event);
+    });
+  };
 
+  #renderNoEvents = () => {
+    render(this.#noEventsComponent, this.#eventsContainer);
+  };
+
+  #renderEventsBoard = () => {
     if (!this.#events.length) {
-      render(this.#noEventsComponent, this.#eventsContainer);
+      this.#renderNoEvents();
     } else {
-      render(new SortView(), this.#eventsContainer);
-      render(this.#eventsComponent, this.#eventsContainer);
-
-      this.#events.forEach((event) => {
-        this.#renderEvent(event);
-      });
+      this.#renderSortBar();
+      this.#renderEvents();
     }
   };
 }
