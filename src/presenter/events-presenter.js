@@ -1,15 +1,13 @@
-import { render, replace } from '../framework/render';
+import { render } from '../framework/render';
 
-import { isEscEvent } from '../utils/common';
 import { getOffersByType} from '../mock/offers-by-type';
 import { generateFilter } from '../mock/filter.js';
 
 import FilterView from '../view/filter-view';
 import SortView from '../view/sort-view';
 import EventsListView from '../view/events-list-view';
-import EventEditView from '../view/event-edit-view';
-import EventView from '../view/event-view';
 import noEventsView from '../view/no-events-view';
+import EventPresenter from './event-presenter';
 
 const offersByType = getOffersByType();
 
@@ -54,43 +52,12 @@ export default class EventsPresenter {
   };
 
   #renderEvent = (event) => {
-    const eventComponent = new EventView(event, this.#offers, this.#destinations);
-    const eventEditComponent = new EventEditView(event, this.#offers, this.#destinations, offersByType);
+    const eventPresenter = new EventPresenter(
+      this.#eventsComponent.element, this.#events, this.#offers,
+      offersByType, this.#destinations,
+    );
 
-    const activateEditEvent = () => {
-      replace(eventEditComponent, eventComponent);
-    };
-
-    const deactivateEditEvent = () => {
-      replace(eventComponent, eventEditComponent);
-    };
-
-    const cancelEditEvent = () => {
-      deactivateEditEvent();
-      document.removeEventListener('keydown', onEscKeyDown);
-    };
-
-    function onEscKeyDown(evt) {
-      if (isEscEvent(evt)) {
-        evt.preventDefault();
-        cancelEditEvent();
-      }
-    }
-
-    eventComponent.setEditClickHandler(() => {
-      activateEditEvent();
-      document.addEventListener('keydown', onEscKeyDown);
-    });
-
-    eventEditComponent.setCancelEditClickHandler(() => {
-      cancelEditEvent();
-    });
-
-    eventEditComponent.setSubmitHandler(() => {
-      cancelEditEvent();
-    });
-
-    render(eventComponent, this.#eventsComponent.element);
+    eventPresenter.init(event);
   };
 
   #renderEvents = () => {
