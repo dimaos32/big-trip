@@ -169,7 +169,7 @@ export default class EventEditView extends AbstractView {
   };
 
   setFormSubmitHandler = (callback) => {
-    this._callback.submit = callback;
+    this._callback.formSubmit = callback;
     this.element.addEventListener('submit', this.#submitHandler);
   };
 
@@ -180,6 +180,6 @@ export default class EventEditView extends AbstractView {
 
   #submitHandler = (evt) => {
     evt.preventDefault();
-    this._callback.submit();
+    this._callback.formSubmit(this.#event);
   };
 }

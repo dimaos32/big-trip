@@ -1,7 +1,9 @@
 import { render, remove } from '../framework/render';
 
 import { getOffersByType} from '../mock/offers-by-type';
-import { generateFilter } from '../mock/filter.js';
+import { generateFilter } from '../mock/filter';
+
+import { updateItem } from '../utils/common';
 
 import FilterView from '../view/filter-view';
 import SortView from '../view/sort-view';
@@ -48,6 +50,11 @@ export default class EventsPresenter {
     this.#renderEventsBoard();
   };
 
+  #handleEventChange = (updatedEvent) => {
+    this.#events = updateItem(this.#events, updatedEvent);
+    this.#eventPresenter.get(updatedEvent.id).init(updatedEvent);
+  };
+
   #renderFilter = () => {
     render(this.#filterComponent, this.#filterContainer);
   };
@@ -59,7 +66,7 @@ export default class EventsPresenter {
   #renderEvent = (event) => {
     const eventPresenter = new EventPresenter(
       this.#eventsComponent.element, this.#events, this.#offers,
-      offersByType, this.#destinations,
+      offersByType, this.#destinations, this.#handleEventChange
     );
 
     eventPresenter.init(event);

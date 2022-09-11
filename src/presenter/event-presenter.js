@@ -11,18 +11,20 @@ export default class EventPresenter {
   #offers = null;
   #offersByType = null;
   #destinations = null;
+  #changeData = null;
 
   #eventComponent = null;
   #eventEditComponent = null;
 
   #event = null;
 
-  constructor(eventsContainer, events, offers, offersByType, destinations) {
+  constructor(eventsContainer, events, offers, offersByType, destinations, changeData) {
     this.#eventsContainer = eventsContainer;
     this.#events = events;
     this.#offers = offers;
     this.#offersByType = offersByType;
     this.#destinations = destinations;
+    this.#changeData = changeData;
   }
 
   init = (event) => {
@@ -35,6 +37,7 @@ export default class EventPresenter {
     this.#eventEditComponent = new EventEditView(this.#event, this.#offers, this.#destinations, this.#offersByType);
 
     this.#eventComponent.setEditClickHandler(this.#handleEditClick);
+    this.#eventComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
     this.#eventEditComponent.setCancelEditClickHandler(this.#handleCancelEditClick);
     this.#eventEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
 
@@ -43,11 +46,11 @@ export default class EventPresenter {
       return;
     }
 
-    if (this.#eventsContainer.contains(prevEventComponent.content)) {
+    if (this.#eventsContainer.contains(prevEventComponent.element)) {
       replace(this.#eventComponent, prevEventComponent);
     }
 
-    if (this.#eventsContainer.contains(prevEventEditComponent.content)) {
+    if (this.#eventsContainer.contains(prevEventEditComponent.element)) {
       replace(this.#eventEditComponent, prevEventEditComponent);
     }
 
@@ -81,11 +84,16 @@ export default class EventPresenter {
     this.#activateEditEvent();
   };
 
+  #handleFavoriteClick = () => {
+    this.#changeData({...this.#event, isFavorite: !this.#event.isFavorite});
+  };
+
   #handleCancelEditClick = () => {
     this.#deactivateEditEvent();
   };
 
-  #handleFormSubmit = () => {
+  #handleFormSubmit = (event) => {
+    this.#changeData(event);
     this.#deactivateEditEvent();
   };
 }
