@@ -1,4 +1,4 @@
-import { render } from '../framework/render';
+import { render, remove } from '../framework/render';
 
 import { getOffersByType} from '../mock/offers-by-type';
 import { generateFilter } from '../mock/filter.js';
@@ -24,8 +24,12 @@ export default class EventsPresenter {
   #destinations = null;
   #filter = null;
 
+  #filterComponent = null;
+  #sortComponent = new SortView();
   #eventsComponent = new EventsListView();
   #noEventsComponent = new noEventsView();
+
+  #eventPresenter = new Map();
 
   init = (filterContainer, eventsContainer, eventsModel, offersModel, destinationsModel) => {
     this.#filterContainer = filterContainer;
@@ -37,6 +41,7 @@ export default class EventsPresenter {
     this.#offers = [...this.#offersModel.offers];
     this.#destinations = [...this.#destinationsModel.destinations];
     this.#filter = generateFilter(this.#events);
+    this.#filterComponent = new FilterView(this.#filter);
 
     this.#renderFilter();
 
@@ -44,11 +49,11 @@ export default class EventsPresenter {
   };
 
   #renderFilter = () => {
-    render(new FilterView(this.#filter), this.#filterContainer);
+    render(this.#filterComponent, this.#filterContainer);
   };
 
-  #renderSortBar = () => {
-    render(new SortView(), this.#eventsContainer);
+  #renderSort = () => {
+    render(this.#sortComponent, this.#eventsContainer);
   };
 
   #renderEvent = (event) => {
@@ -58,6 +63,7 @@ export default class EventsPresenter {
     );
 
     eventPresenter.init(event);
+    this.#eventPresenter.set(event.id, eventPresenter);
   };
 
   #renderEvents = () => {
@@ -68,6 +74,12 @@ export default class EventsPresenter {
     });
   };
 
+  #clearEventList = () => {
+    this.#eventPresenter.forEach((presenter) => presenter.destroy());
+    this.#eventPresenter.clear();
+    remove(this.#eventsComponent);
+  };
+
   #renderNoEvents = () => {
     render(this.#noEventsComponent, this.#eventsContainer);
   };
@@ -76,7 +88,7 @@ export default class EventsPresenter {
     if (!this.#events.length) {
       this.#renderNoEvents();
     } else {
-      this.#renderSortBar();
+      this.#renderSort();
       this.#renderEvents();
     }
   };
