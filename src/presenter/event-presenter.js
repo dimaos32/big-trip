@@ -5,6 +5,11 @@ import { isEscEvent } from '../utils/common';
 import EventEditView from '../view/event-edit-view';
 import EventView from '../view/event-view';
 
+const Mode = {
+  DEFAULT: 'DEFAULT',
+  EDITING: 'EDITING',
+};
+
 export default class EventPresenter {
   #eventsContainer = null;
   #events = null;
@@ -12,19 +17,22 @@ export default class EventPresenter {
   #offersByType = null;
   #destinations = null;
   #changeData = null;
+  #changeMode = null;
 
   #eventComponent = null;
   #eventEditComponent = null;
 
   #event = null;
+  #mode = Mode.DEFAULT;
 
-  constructor(eventsContainer, events, offers, offersByType, destinations, changeData) {
+  constructor(eventsContainer, events, offers, offersByType, destinations, changeData, changeMode) {
     this.#eventsContainer = eventsContainer;
     this.#events = events;
     this.#offers = offers;
     this.#offersByType = offersByType;
     this.#destinations = destinations;
     this.#changeData = changeData;
+    this.#changeMode = changeMode;
   }
 
   init = (event) => {
@@ -46,11 +54,11 @@ export default class EventPresenter {
       return;
     }
 
-    if (this.#eventsContainer.contains(prevEventComponent.element)) {
+    if (this.#mode === Mode.DEFAULT) {
       replace(this.#eventComponent, prevEventComponent);
     }
 
-    if (this.#eventsContainer.contains(prevEventEditComponent.element)) {
+    if (this.#mode === Mode.EDITING) {
       replace(this.#eventEditComponent, prevEventEditComponent);
     }
 
@@ -63,14 +71,25 @@ export default class EventPresenter {
     remove(this.#eventEditComponent);
   };
 
+  resetView = () => {
+    if (this.#mode !== Mode.DEFAULT) {
+      this.#deactivateEditEvent();
+    }
+  };
+
   #activateEditEvent = () => {
     replace(this.#eventEditComponent, this.#eventComponent);
     document.addEventListener('keydown', this.#escKeyDownHandler);
+
+    this.#changeMode();
+    this.#mode = Mode.EDITING;
   };
 
   #deactivateEditEvent = () => {
     replace(this.#eventComponent, this.#eventEditComponent);
     document.removeEventListener('keydown', this.#escKeyDownHandler);
+
+    this.#mode = Mode.DEFAULT;
   };
 
   #escKeyDownHandler = (evt) => {

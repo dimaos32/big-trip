@@ -50,6 +50,10 @@ export default class EventsPresenter {
     this.#renderEventsBoard();
   };
 
+  #handleModeChange = () => {
+    this.#eventPresenter.forEach((presenter) => presenter.resetView());
+  };
+
   #handleEventChange = (updatedEvent) => {
     this.#events = updateItem(this.#events, updatedEvent);
     this.#eventPresenter.get(updatedEvent.id).init(updatedEvent);
@@ -65,8 +69,8 @@ export default class EventsPresenter {
 
   #renderEvent = (event) => {
     const eventPresenter = new EventPresenter(
-      this.#eventsComponent.element, this.#events, this.#offers,
-      offersByType, this.#destinations, this.#handleEventChange
+      this.#eventsComponent.element, this.#events, this.#offers, offersByType, this.#destinations,
+      this.#handleEventChange, this.#handleModeChange
     );
 
     eventPresenter.init(event);
