@@ -1,4 +1,4 @@
-import { render, replace } from '../framework/render';
+import { render, replace, remove } from '../framework/render';
 
 import { isEscEvent } from '../utils/common';
 
@@ -28,6 +28,9 @@ export default class EventPresenter {
   init = (event) => {
     this.#event = event;
 
+    const prevEventComponent = this.#eventComponent;
+    const prevEventEditComponent = this.#eventEditComponent;
+
     this.#eventComponent = new EventView(this.#event, this.#offers, this.#destinations);
     this.#eventEditComponent = new EventEditView(this.#event, this.#offers, this.#destinations, this.#offersByType);
 
@@ -35,7 +38,26 @@ export default class EventPresenter {
     this.#eventEditComponent.setCancelEditClickHandler(this.#handleCancelEditClick);
     this.#eventEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
 
-    render(this.#eventComponent, this.#eventsContainer);
+    if (prevEventComponent === null || prevEventEditComponent === null) {
+      render(this.#eventComponent, this.#eventsContainer);
+      return;
+    }
+
+    if (this.#eventsContainer.contains(prevEventComponent.content)) {
+      replace(this.#eventComponent, prevEventComponent);
+    }
+
+    if (this.#eventsContainer.contains(prevEventEditComponent.content)) {
+      replace(this.#eventEditComponent, prevEventEditComponent);
+    }
+
+    remove(prevEventComponent);
+    remove(prevEventEditComponent);
+  };
+
+  destroy = () => {
+    remove(this.#eventComponent);
+    remove(this.#eventEditComponent);
   };
 
   #activateEditEvent = () => {
