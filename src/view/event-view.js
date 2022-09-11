@@ -5,7 +5,7 @@ import { humanizeEventDate, humanizeEventtime, getTimeDuration } from '../utils/
 const createEventTemplate = (event, offersData, destinationsData) => {
   const { basePrice, dateFrom, dateTo, destination, isFavorite, offers, type } = event;
 
-  const humanizedDateFrom = humanizeEventDate(dateFrom);
+  const humanizedDateFrom = humanizeEventDate(dateFrom, true);
   const humanizedTimeFrom = humanizeEventtime(dateFrom);
   const humanizedTimeTo = humanizeEventtime(dateTo);
 
