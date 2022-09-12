@@ -1,5 +1,7 @@
 import { render, replace, remove } from '../framework/render';
 
+import { getOffersByType} from '../mock/offers-by-type';
+
 import { isEscEvent } from '../utils/common';
 
 import EventEditView from '../view/event-edit-view';
@@ -12,12 +14,12 @@ const Mode = {
 
 export default class EventPresenter {
   #eventsContainer = null;
-  #events = null;
   #offers = null;
-  #offersByType = null;
   #destinations = null;
   #changeData = null;
   #changeMode = null;
+
+  #offersByType = getOffersByType();
 
   #eventComponent = null;
   #eventEditComponent = null;
@@ -25,11 +27,9 @@ export default class EventPresenter {
   #event = null;
   #mode = Mode.DEFAULT;
 
-  constructor(eventsContainer, events, offers, offersByType, destinations, changeData, changeMode) {
+  constructor(eventsContainer, offers, destinations, changeData, changeMode) {
     this.#eventsContainer = eventsContainer;
-    this.#events = events;
     this.#offers = offers;
-    this.#offersByType = offersByType;
     this.#destinations = destinations;
     this.#changeData = changeData;
     this.#changeMode = changeMode;
