@@ -1,18 +1,14 @@
-import { render, replace } from '../framework/render';
+import { render, remove } from '../framework/render';
 
-import { isEscEvent } from '../utils/common';
-import { getOffersByType} from '../mock/offers-by-type';
-import { generateFilter } from '../mock/filter.js';
+import { generateFilter } from '../mock/filter';
+
+import { updateItem } from '../utils/common';
 
 import FilterView from '../view/filter-view';
 import SortView from '../view/sort-view';
 import EventsListView from '../view/events-list-view';
-import EventsItemView from '../view/events-item-view';
-import EventEditView from '../view/event-edit-view';
-import EventView from '../view/event-view';
 import noEventsView from '../view/no-events-view';
-
-const offersByType = getOffersByType();
+import EventPresenter from './event-presenter';
 
 export default class EventsPresenter {
   #filterContainer = null;
@@ -27,54 +23,12 @@ export default class EventsPresenter {
   #destinations = null;
   #filter = null;
 
+  #filterComponent = null;
+  #sortComponent = new SortView();
   #eventsComponent = new EventsListView();
   #noEventsComponent = new noEventsView();
 
-  renderEventsItem = (content) => {
-    const itemElement = new EventsItemView();
-    render(itemElement, this.#eventsComponent.element);
-    render(content, itemElement.element);
-  };
-
-  #renderEvent = (event) => {
-    const eventComponent = new EventView(event, this.#offers, this.#destinations);
-    const eventEditComponent = new EventEditView(event, this.#offers, this.#destinations, offersByType);
-
-    const activateEditEvent = () => {
-      replace(eventEditComponent, eventComponent);
-    };
-
-    const deactivateEditEvent = () => {
-      replace(eventComponent, eventEditComponent);
-    };
-
-    const cancelEditEvent = () => {
-      deactivateEditEvent();
-      document.removeEventListener('keydown', onEscKeyDown);
-    };
-
-    function onEscKeyDown(evt) {
-      if (isEscEvent(evt)) {
-        evt.preventDefault();
-        cancelEditEvent();
-      }
-    }
-
-    eventComponent.setEditClickHandler(() => {
-      activateEditEvent();
-      document.addEventListener('keydown', onEscKeyDown);
-    });
-
-    eventEditComponent.setCancelEditClickHandler(() => {
-      cancelEditEvent();
-    });
-
-    eventEditComponent.setSubmitHandler(() => {
-      cancelEditEvent();
-    });
-
-    this.renderEventsItem(eventComponent);
-  };
+  #eventPresenter = new Map();
 
   init = (filterContainer, eventsContainer, eventsModel, offersModel, destinationsModel) => {
     this.#filterContainer = filterContainer;
@@ -86,18 +40,64 @@ export default class EventsPresenter {
     this.#offers = [...this.#offersModel.offers];
     this.#destinations = [...this.#destinationsModel.destinations];
     this.#filter = generateFilter(this.#events);
+    this.#filterComponent = new FilterView(this.#filter);
 
-    render(new FilterView(this.#filter), this.#filterContainer);
+    this.#renderFilter();
 
+    this.#renderEventsBoard();
+  };
+
+  #handleModeChange = () => {
+    this.#eventPresenter.forEach((presenter) => presenter.resetView());
+  };
+
+  #handleEventChange = (updatedEvent) => {
+    this.#events = updateItem(this.#events, updatedEvent);
+    this.#eventPresenter.get(updatedEvent.id).init(updatedEvent);
+  };
+
+  #renderFilter = () => {
+    render(this.#filterComponent, this.#filterContainer);
+  };
+
+  #renderSort = () => {
+    render(this.#sortComponent, this.#eventsContainer);
+  };
+
+  #renderEvent = (event) => {
+    const eventPresenter = new EventPresenter(
+      this.#eventsComponent.element, this.#offers, this.#destinations,
+      this.#handleEventChange, this.#handleModeChange
+    );
+
+    eventPresenter.init(event);
+    this.#eventPresenter.set(event.id, eventPresenter);
+  };
+
+  #renderEvents = () => {
+    render(this.#eventsComponent, this.#eventsContainer);
+
+    this.#events.forEach((event) => {
+      this.#renderEvent(event);
+    });
+  };
+
+  #clearEventList = () => {
+    this.#eventPresenter.forEach((presenter) => presenter.destroy());
+    this.#eventPresenter.clear();
+    remove(this.#eventsComponent);
+  };
+
+  #renderNoEvents = () => {
+    render(this.#noEventsComponent, this.#eventsContainer);
+  };
+
+  #renderEventsBoard = () => {
     if (!this.#events.length) {
-      render(this.#noEventsComponent, this.#eventsContainer);
+      this.#renderNoEvents();
     } else {
-      render(new SortView(), this.#eventsContainer);
-      render(this.#eventsComponent, this.#eventsContainer);
-
-      this.#events.forEach((event) => {
-        this.#renderEvent(event);
-      });
+      this.#renderSort();
+      this.#renderEvents();
     }
   };
 }

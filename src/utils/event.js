@@ -15,7 +15,10 @@ const MAX_SECONDS_GAP = MAX_DAYS_GAP * HOURS_IN_DAY * MINUTES_IN_HOURS * SECONDS
 const MIN_SECONDS_DURATION = MIN_HOURS_DURATION * MINUTES_IN_HOURS * SECONDS_IN_MINUTES;
 const MAX_SECONDS_DURATION = MAX_HOURS_DURATION * MINUTES_IN_HOURS * SECONDS_IN_MINUTES;
 
-const humanizeEventDate = (dueDate) => dayjs(dueDate).format('D MMMM');
+const humanizeEventDate = (dueDate, isSimple = false) =>
+  isSimple
+    ? dayjs(dueDate).format('MMM D')
+    : dayjs(dueDate).format('D MMMM');
 const humanizeEventtime = (dueDate) => dayjs(dueDate).format('HH:mm');
 
 const humanizeDateAndTime = (dueDate) => dayjs(dueDate).format('DD/MM/YY HH:mm');
