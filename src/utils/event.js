@@ -44,7 +44,19 @@ const generatePeriod = () => {
   ];
 };
 
+const sortByDate = (eventA, eventB) => dayjs(eventA.dateFrom).diff(dayjs(eventB.dateFrom));
+
+const sortByTime = (eventA, eventB) => (eventB.dateTo - eventB.dateFrom) - (eventA.dateTo - eventA.dateFrom);
+
+const sortByPrice = (eventA, eventB) => eventB.basePrice - eventA.basePrice;
+
+const sortBy = {
+  'sort-day': sortByDate,
+  'sort-time': sortByTime,
+  'sort-price': sortByPrice,
+};
+
 export {
   humanizeEventDate, humanizeEventtime, humanizeDateAndTime, isNotStartedEvent, isEndedEvent,
-  getTimeDuration, generatePeriod,
+  getTimeDuration, generatePeriod, sortBy,
 };

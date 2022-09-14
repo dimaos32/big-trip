@@ -11,14 +11,14 @@ const points = [
     type: 'bus',
   },
   {
-    basePrice: 1100,
+    basePrice: 1600,
     destination: 1,
     isFavorite: false,
     offers: [3],
     type: 'bus',
   },
   {
-    basePrice: 1100,
+    basePrice: 1300,
     destination: 1,
     isFavorite: false,
     offers: [1, 3],
