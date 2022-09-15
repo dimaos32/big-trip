@@ -8,4 +8,10 @@ const Message = {
   NO_EVENTS: 'Click New Event to create your first point',
 };
 
-export { FilterType, Message };
+const SortType = {
+  DEFAULT: 'sort-day',
+  TIME_UP: 'sort-time',
+  PRICE_UP: 'sort-price',
+};
+
+export { FilterType, Message, SortType };

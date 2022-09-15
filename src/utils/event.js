@@ -50,13 +50,7 @@ const sortByTime = (eventA, eventB) => (eventB.dateTo - eventB.dateFrom) - (even
 
 const sortByPrice = (eventA, eventB) => eventB.basePrice - eventA.basePrice;
 
-const sortBy = {
-  'sort-day': sortByDate,
-  'sort-time': sortByTime,
-  'sort-price': sortByPrice,
-};
-
 export {
   humanizeEventDate, humanizeEventtime, humanizeDateAndTime, isNotStartedEvent, isEndedEvent,
-  getTimeDuration, generatePeriod, sortBy,
+  getTimeDuration, generatePeriod, sortByDate, sortByTime, sortByPrice,
 };

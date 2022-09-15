@@ -1,9 +1,11 @@
 import { render, remove } from '../framework/render';
 
+import { SortType } from '../const';
+
 import { generateFilter } from '../mock/filter';
 
 import { updateItem } from '../utils/common';
-import { sortBy } from '../utils/event';
+import { sortByDate, sortByTime, sortByPrice } from '../utils/event';
 
 import FilterView from '../view/filter-view';
 import SortView from '../view/sort-view';
@@ -37,11 +39,13 @@ export default class EventsPresenter {
     this.#eventsModel = eventsModel;
     this.#offersModel = offersModel;
     this.#destinationsModel = destinationsModel;
-    this.#events = this.#eventsModel.events ? [...this.#eventsModel.events].sort(sortBy['sort-day']) : [];
+    this.#events = this.#eventsModel.events ? [...this.#eventsModel.events] : [];
     this.#offers = [...this.#offersModel.offers];
     this.#destinations = [...this.#destinationsModel.destinations];
     this.#filter = generateFilter(this.#events);
     this.#filterComponent = new FilterView(this.#filter);
+
+    this.#events.sort(this.#sortEvents(SortType.DEFAULT));
 
     this.#renderFilter();
 
@@ -58,24 +62,26 @@ export default class EventsPresenter {
   };
 
   #handleSortTypeChange = (sortType) => {
-    this.#events.sort(sortBy[sortType]);
+    this.#events.sort(this.#sortEvents(sortType));
     this.#clearEventList();
     this.#renderEventsBoard();
   };
 
-  // #sortEvents = (sortType) => {
-  //   switch (sortType) {
-  //     case 'sort-day':
-  //       this.#events.sort(sortByDate);
-  //       break;
-  //     case "sort-time":
-  //       this.#events.sort(sortByTime);
-  //       break;
-  //     case 'sort-price':
-  //       this.#events.sort(sortByPrice);
-  //       break;
-  //   }
-  // };
+  #sortEvents = (sortType) => {
+    switch (sortType) {
+      case SortType.DEFAULT :
+        this.#events.sort(sortByDate);
+        break;
+      case SortType.TIME_UP:
+        this.#events.sort(sortByTime);
+        break;
+      case SortType.PRICE_UP:
+        this.#events.sort(sortByPrice);
+        break;
+      default:
+        this.#events.sort(sortByDate);
+    }
+  };
 
   #renderFilter = () => {
     render(this.#filterComponent, this.#filterContainer);
