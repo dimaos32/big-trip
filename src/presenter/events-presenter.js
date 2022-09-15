@@ -1,8 +1,11 @@
 import { render, remove } from '../framework/render';
 
+import { SortType } from '../const';
+
 import { generateFilter } from '../mock/filter';
 
 import { updateItem } from '../utils/common';
+import { sortByDate, sortByTime, sortByPrice } from '../utils/event';
 
 import FilterView from '../view/filter-view';
 import SortView from '../view/sort-view';
@@ -42,6 +45,8 @@ export default class EventsPresenter {
     this.#filter = generateFilter(this.#events);
     this.#filterComponent = new FilterView(this.#filter);
 
+    this.#events.sort(this.#sortEvents(SortType.DEFAULT));
+
     this.#renderFilter();
 
     this.#renderEventsBoard();
@@ -56,12 +61,35 @@ export default class EventsPresenter {
     this.#eventPresenter.get(updatedEvent.id).init(updatedEvent);
   };
 
+  #handleSortTypeChange = (sortType) => {
+    this.#events.sort(this.#sortEvents(sortType));
+    this.#clearEventList();
+    this.#renderEventsBoard();
+  };
+
+  #sortEvents = (sortType) => {
+    switch (sortType) {
+      case SortType.DEFAULT :
+        this.#events.sort(sortByDate);
+        break;
+      case SortType.TIME_UP:
+        this.#events.sort(sortByTime);
+        break;
+      case SortType.PRICE_UP:
+        this.#events.sort(sortByPrice);
+        break;
+      default:
+        this.#events.sort(sortByDate);
+    }
+  };
+
   #renderFilter = () => {
     render(this.#filterComponent, this.#filterContainer);
   };
 
   #renderSort = () => {
     render(this.#sortComponent, this.#eventsContainer);
+    this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
   };
 
   #renderEvent = (event) => {
