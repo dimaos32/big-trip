@@ -1,10 +1,10 @@
-import AbstractView from '../framework/view/abstract-view';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 
 import { humanizeDateAndTime } from '../utils/event';
 import { getEventTypes } from '../mock/event-types';
 
 const createEventEditFormTemplate = (event, offersData, destinationsData, offersByTypeData) => {
-  const { basePrice, dateFrom, dateTo, destination, offers, type } = event;
+  const { basePrice, humanizedDateFrom, humanizedDateTo, destination, offers, type } = event;
   const { description, name, pictures } = destinationsData.find((el) => (el.id === destination));
 
   const { offers: currentOfferIds } = offersByTypeData.find((offer) => offer.type === event.type);
@@ -108,10 +108,10 @@ const createEventEditFormTemplate = (event, offersData, destinationsData, offers
 
         <div class="event__field-group  event__field-group--time">
           <label class="visually-hidden" for="event-start-time-1">From</label>
-          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${humanizeDateAndTime(dateFrom)}">
+          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${humanizedDateFrom}">
           &mdash;
           <label class="visually-hidden" for="event-end-time-1">To</label>
-          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${humanizeDateAndTime(dateTo)}">
+          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${humanizedDateTo}">
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -143,8 +143,7 @@ const createEventEditFormTemplate = (event, offersData, destinationsData, offers
   );
 };
 
-export default class EventEditView extends AbstractView {
-  #event = null;
+export default class EventEditView extends AbstractStatefulView {
   #offers = null;
   #destinations = null;
   #offersByType = null;
@@ -153,14 +152,14 @@ export default class EventEditView extends AbstractView {
 
   constructor(event, offers, destinations, offersByType) {
     super();
-    this.#event = event;
+    this._state = EventEditView.parseEventToState(event);
     this.#offers = offers;
     this.#destinations = destinations;
     this.#offersByType = offersByType;
   }
 
   get template() {
-    return createEventEditFormTemplate(this.#event, this.#offers, this.#destinations, this.#offersByType);
+    return createEventEditFormTemplate(this._state, this.#offers, this.#destinations, this.#offersByType);
   }
 
   setCancelEditClickHandler = (callback) => {
@@ -180,6 +179,21 @@ export default class EventEditView extends AbstractView {
 
   #submitHandler = (evt) => {
     evt.preventDefault();
-    this._callback.formSubmit(this.#event);
+    this._callback.formSubmit(this._state);
+  };
+
+  static parseEventToState = (event) => ({
+    ...event,
+    humanizedDateFrom: humanizeDateAndTime(event.dateFrom),
+    humanizedDateTo: humanizeDateAndTime(event.dateTo),
+  });
+
+  static parseStateToEvent = (state) => {
+    const event = {...state};
+
+    delete event.humanizedDateFrom;
+    delete event.humanizedDateTo;
+
+    return event;
   };
 }
