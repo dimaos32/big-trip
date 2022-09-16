@@ -20,7 +20,7 @@ const createEventEditFormTemplate = (event, offersData, destinationsData, offers
 
         return (`
           <div class="event__offer-selector">
-            <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}" type="checkbox" name="event-offer-luggage" ${isChecked ? 'checked' : ''}>
+            <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}" data-event-offer-id="${id}" type="checkbox" name="event-offer-luggage" ${isChecked ? 'checked' : ''}>
             <label class="event__offer-label" for="event-offer-${id}">
               <span class="event__offer-title">${title}</span>
               &plus;&euro;&nbsp;
@@ -156,15 +156,24 @@ export default class EventEditView extends AbstractStatefulView {
     this.#offers = offers;
     this.#destinations = destinations;
     this.#offersByType = offersByType;
+
+    this.#setInnerHandlers();
   }
 
   get template() {
     return createEventEditFormTemplate(this._state, this.#offers, this.#destinations, this.#offersByType);
   }
 
+  _restoreHandlers = () => {
+    this.#setInnerHandlers();
+    this.setCancelEditClickHandler(this._callback.click);
+    this.setFormSubmitHandler(this._callback.formSubmit);
+  };
+
   setCancelEditClickHandler = (callback) => {
     this._callback.click = callback;
-    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#clickHandler);
+    this.element.querySelector('.event__reset-btn')
+      .addEventListener('click', this.#clickHandler);
   };
 
   setFormSubmitHandler = (callback) => {
@@ -180,6 +189,26 @@ export default class EventEditView extends AbstractStatefulView {
   #submitHandler = (evt) => {
     evt.preventDefault();
     this._callback.formSubmit(this._state);
+  };
+
+  #availableToggleHandler = ({ target }) => {
+    const index = this._state.offers.indexOf(Number(target.dataset.eventOfferId));
+
+    if (index !== -1) {
+      this._state.offers.splice(index, 1);
+      return;
+    }
+
+    this._state.offers.push(Number(target.dataset.eventOfferId));
+    this._state.offers.sort((a, b) => a - b);
+
+    console.log(this._state.offers);
+  };
+
+  #setInnerHandlers = () => {
+    this.element.querySelector('.event__available-offers')
+      .addEventListener('change', this.#availableToggleHandler);
+
   };
 
   static parseEventToState = (event) => ({
