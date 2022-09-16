@@ -45,7 +45,7 @@ export default class EventsPresenter {
     this.#filter = generateFilter(this.#events);
     this.#filterComponent = new FilterView(this.#filter);
 
-    this.#events.sort(this.#sortEvents(SortType.DEFAULT));
+    this.#events.sort(this.#sortEvents(SortType.DATE_UP));
 
     this.#renderFilter();
 
@@ -69,7 +69,7 @@ export default class EventsPresenter {
 
   #sortEvents = (sortType) => {
     switch (sortType) {
-      case SortType.DEFAULT :
+      case SortType.DATE_UP :
         this.#events.sort(sortByDate);
         break;
       case SortType.TIME_UP:
@@ -79,7 +79,7 @@ export default class EventsPresenter {
         this.#events.sort(sortByPrice);
         break;
       default:
-        this.#events.sort(sortByDate);
+        throw new Error(`Неизвестный тип сортировки: '${sortType}'!`);
     }
   };
 

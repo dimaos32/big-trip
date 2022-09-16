@@ -9,7 +9,7 @@ const Message = {
 };
 
 const SortType = {
-  DEFAULT: 'sort-day',
+  DATE_UP: 'sort-day',
   TIME_UP: 'sort-time',
   PRICE_UP: 'sort-price',
 };
