@@ -202,9 +202,31 @@ export default class EventEditView extends AbstractStatefulView {
     this._state.offers.push(Number(target.dataset.eventOfferId));
   };
 
+  #eventTypeChangeHandler = ({ target }) => {
+    const eventTypeList = this.element.querySelector('.event__type-list');
+    const currentEventTypeInput = eventTypeList.querySelector('.event__type-input[checked]');
+
+    if (currentEventTypeInput !== target) {
+      const eventTypeIcon = this.element.querySelector('.event__type-icon');
+      const eventTypeOutput = this.element.querySelector('.event__type-output');
+      const eventTypeToggle = this.element.querySelector('.event__type-toggle');
+
+      this._state.type = target.value;
+
+      eventTypeIcon.src = `img/icons/${target.value}.png`;
+      eventTypeOutput.textContent = target.value;
+      eventTypeToggle.checked = false;
+    }
+
+
+    this._state.offers.push(Number(target.dataset.eventOfferId));
+  };
+
   #setInnerHandlers = () => {
     this.element.querySelector('.event__available-offers')
       .addEventListener('change', this.#availableToggleHandler);
+    this.element.querySelector('.event__type-list')
+      .addEventListener('change', this.#eventTypeChangeHandler);
   };
 
   static parseEventToState = (event) => ({
