@@ -5,16 +5,31 @@ const destinations = [
     'name': 'Chamonix',
     'pictures': [
       {
-        'src': 'http://picsum.photos/300/200?r=0.0762563005163317',
+        'src': 'https://via.placeholder.com/300x200',
         'description': 'Chamonix parliament building',
       },
       {
-        'src': 'http://picsum.photos/300/200?r=0.16076887885065805',
+        'src': 'https://via.placeholder.com/300x200',
         'description': 'Chamonix parliament building',
       },
       {
-        'src': 'http://picsum.photos/300/200?r=0.4129469854293657',
+        'src': 'https://via.placeholder.com/300x200',
         'description': 'Chamonix parliament building',
+      },
+    ],
+  },
+  {
+    'id': 2,
+    'description': 'Store',
+    'name': 'Store',
+    'pictures': [
+      {
+        'src': 'https://via.placeholder.com/300x200',
+        'description': 'Store',
+      },
+      {
+        'src': 'https://via.placeholder.com/300x200',
+        'description': 'Store',
       },
     ],
   },

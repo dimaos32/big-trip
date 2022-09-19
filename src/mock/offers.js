@@ -6,13 +6,18 @@ const offers = [
   },
   {
     'id': 2,
-    'title': 'Take an ice-cream',
-    'price': 10,
+    'title': 'listen music',
+    'price': 5,
   },
   {
     'id': 3,
     'title': 'Ban radio "Chansone"',
     'price': 30,
+  },
+  {
+    'id': 4,
+    'title': 'Switch on air-conditioner',
+    'price': 10,
   },
 ];
 

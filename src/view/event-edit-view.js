@@ -200,15 +200,11 @@ export default class EventEditView extends AbstractStatefulView {
     }
 
     this._state.offers.push(Number(target.dataset.eventOfferId));
-    this._state.offers.sort((a, b) => a - b);
-
-    console.log(this._state.offers);
   };
 
   #setInnerHandlers = () => {
     this.element.querySelector('.event__available-offers')
       .addEventListener('change', this.#availableToggleHandler);
-
   };
 
   static parseEventToState = (event) => ({
