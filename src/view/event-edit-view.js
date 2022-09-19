@@ -7,7 +7,9 @@ const createEventEditFormTemplate = (event, offersData, destinationsData, offers
   const { basePrice, humanizedDateFrom, humanizedDateTo, destination, offers, type } = event;
   const { description, name, pictures } = destinationsData.find((el) => (el.id === destination));
 
-  const { offers: currentOfferIds } = offersByTypeData.find((offer) => offer.type === event.type);
+  const offersByTypeDatum = offersByTypeData.find((offer) => offer.type === event.type) || [];
+
+  const { offers: currentOfferIds = [] } = offersByTypeDatum;
 
   const currentOffers = offersData.filter((offer) => currentOfferIds.includes(offer.id));
   const eventTypes = getEventTypes();
@@ -81,6 +83,18 @@ const createEventEditFormTemplate = (event, offersData, destinationsData, offers
     `);
   };
 
+  const generateEventDestinationOptions = () => {
+    const destinationOptions = destinationsData
+      .map((destinationOption) => `<option value="${destinationOption.name}"></option>`)
+      .join('');
+
+    return (`
+      <datalist id="destination-list-1">
+        ${destinationOptions}
+      </datalist>
+    `);
+  };
+
   return (
     `<form class="event event--edit" action="#" method="post">
       <header class="event__header">
@@ -100,9 +114,7 @@ const createEventEditFormTemplate = (event, offersData, destinationsData, offers
           </label>
           <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${name}" list="destination-list-1">
           <datalist id="destination-list-1">
-            <option value="Amsterdam"></option>
-            <option value="Geneva"></option>
-            <option value="Chamonix"></option>
+            ${generateEventDestinationOptions()}
           </datalist>
         </div>
 
@@ -119,7 +131,7 @@ const createEventEditFormTemplate = (event, offersData, destinationsData, offers
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
+          <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${basePrice}">
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -149,6 +161,7 @@ export default class EventEditView extends AbstractStatefulView {
   #offersByType = null;
 
   #element = null;
+  #saveBtn = null;
 
   constructor(event, offers, destinations, offersByType) {
     super();
@@ -156,6 +169,8 @@ export default class EventEditView extends AbstractStatefulView {
     this.#offers = offers;
     this.#destinations = destinations;
     this.#offersByType = offersByType;
+
+    this.#saveBtn = this.element.querySelector('.event__save-btn');
 
     this.#setInnerHandlers();
   }
@@ -211,7 +226,9 @@ export default class EventEditView extends AbstractStatefulView {
       const eventTypeOutput = this.element.querySelector('.event__type-output');
       const eventTypeToggle = this.element.querySelector('.event__type-toggle');
 
-      this._state.type = target.value;
+      this.updateElement({
+        type: target.value,
+      });
 
       eventTypeIcon.src = `img/icons/${target.value}.png`;
       eventTypeOutput.textContent = target.value;
@@ -222,11 +239,37 @@ export default class EventEditView extends AbstractStatefulView {
     this._state.offers.push(Number(target.dataset.eventOfferId));
   };
 
+  #eventDestinationChangeHandler = ({ target }) => {
+    const newDestination = this.#destinations.find((el) => el.name === target.value);
+
+    if (newDestination) {
+      this.updateElement({
+        destination: newDestination.id,
+      });
+    } else {
+      const oldDestination = this.#destinations.find((el) => el.id === this._state.destination);
+
+      target.value = oldDestination ? oldDestination.name : '';
+    }
+  };
+
+  #eventPriceChangeHandler = ({ target }) => {
+    if (target.value === '') {
+      target.value = '0';
+    }
+
+    this._state.basePrice = Number(target.value);
+  };
+
   #setInnerHandlers = () => {
     this.element.querySelector('.event__available-offers')
       .addEventListener('change', this.#availableToggleHandler);
     this.element.querySelector('.event__type-list')
       .addEventListener('change', this.#eventTypeChangeHandler);
+    this.element.querySelector('.event__input--destination')
+      .addEventListener('change', this.#eventDestinationChangeHandler);
+    this.element.querySelector('.event__input--price')
+      .addEventListener('change', this.#eventPriceChangeHandler);
   };
 
   static parseEventToState = (event) => ({
