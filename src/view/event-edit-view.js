@@ -179,6 +179,12 @@ export default class EventEditView extends AbstractStatefulView {
     return createEventEditFormTemplate(this._state, this.#offers, this.#destinations, this.#offersByType);
   }
 
+  reset = (event) => {
+    this.updateElement(
+      EventEditView.parseEventToState(event),
+    );
+  };
+
   _restoreHandlers = () => {
     this.#setInnerHandlers();
     this.setCancelEditClickHandler(this._callback.click);
