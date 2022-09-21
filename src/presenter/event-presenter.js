@@ -73,6 +73,7 @@ export default class EventPresenter {
 
   resetView = () => {
     if (this.#mode !== Mode.DEFAULT) {
+      this.#eventEditComponent.reset(this.#event);
       this.#deactivateEditEvent();
     }
   };
@@ -95,6 +96,7 @@ export default class EventPresenter {
   #escKeyDownHandler = (evt) => {
     if (isEscEvent(evt)) {
       evt.preventDefault();
+      this.#eventEditComponent.reset(this.#event);
       this.#deactivateEditEvent();
     }
   };
@@ -108,6 +110,7 @@ export default class EventPresenter {
   };
 
   #handleCancelEditClick = () => {
+    this.#eventEditComponent.reset(this.#event);
     this.#deactivateEditEvent();
   };
 

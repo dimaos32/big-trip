@@ -20,15 +20,36 @@ const points = [
   {
     basePrice: 1300,
     destination: 1,
-    isFavorite: false,
+    isFavorite: true,
     offers: [1, 3],
     type: 'bus',
+  },
+  {
+    basePrice: 10,
+    destination: 2,
+    isFavorite: false,
+    offers: [2],
+    type: 'drive',
+  },
+  {
+    basePrice: 40,
+    destination: 2,
+    isFavorite: true,
+    offers: [4],
+    type: 'drive',
+  },
+  {
+    basePrice: 15,
+    destination: 2,
+    isFavorite: false,
+    offers: [2, 4],
+    type: 'drive',
   },
 ];
 
 const generateEvent = () => {
   const period = generatePeriod();
-  const event = points[getRandomInteger(0, 2)];
+  const event = points[getRandomInteger(0, points.length - 1)];
 
   event.id = nanoid();
 
