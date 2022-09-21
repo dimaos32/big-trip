@@ -7,9 +7,9 @@ const createEventEditFormTemplate = (event, offersData, destinationsData, offers
   const { basePrice, humanizedDateFrom, humanizedDateTo, destination, offers, type } = event;
   const { description, name, pictures } = destinationsData.find((el) => (el.id === destination));
 
-  const offersByTypeDatum = offersByTypeData.find((offer) => offer.type === event.type) || [];
+  const offersByType = offersByTypeData.find((offer) => offer.type === event.type) || [];
 
-  const { offers: currentOfferIds = [] } = offersByTypeDatum;
+  const { offers: currentOfferIds = [] } = offersByType;
 
   const currentOffers = offersData.filter((offer) => currentOfferIds.includes(offer.id));
   const eventTypes = getEventTypes();
@@ -22,7 +22,14 @@ const createEventEditFormTemplate = (event, offersData, destinationsData, offers
 
         return (`
           <div class="event__offer-selector">
-            <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}" data-event-offer-id="${id}" type="checkbox" name="event-offer-luggage" ${isChecked ? 'checked' : ''}>
+            <input
+              class="event__offer-checkbox  visually-hidden"
+              id="event-offer-${id}"
+              data-event-offer-id="${id}"
+              type="checkbox"
+              name="event-offer-luggage"
+              ${isChecked ? 'checked' : ''}
+            >
             <label class="event__offer-label" for="event-offer-${id}">
               <span class="event__offer-title">${title}</span>
               &plus;&euro;&nbsp;
@@ -160,17 +167,12 @@ export default class EventEditView extends AbstractStatefulView {
   #destinations = null;
   #offersByType = null;
 
-  #element = null;
-  #saveBtn = null;
-
   constructor(event, offers, destinations, offersByType) {
     super();
     this._state = EventEditView.parseEventToState(event);
     this.#offers = offers;
     this.#destinations = destinations;
     this.#offersByType = offersByType;
-
-    this.#saveBtn = this.element.querySelector('.event__save-btn');
 
     this.#setInnerHandlers();
   }
@@ -212,37 +214,25 @@ export default class EventEditView extends AbstractStatefulView {
     this._callback.formSubmit(this._state);
   };
 
-  #availableToggleHandler = ({ target }) => {
+  #availableOffersToggleHandler = ({ target }) => {
+    const availableOffers = [...this._state.offers];
     const index = this._state.offers.indexOf(Number(target.dataset.eventOfferId));
 
     if (index !== -1) {
-      this._state.offers.splice(index, 1);
-      return;
+      availableOffers.splice(index, 1);
+    } else {
+      availableOffers.push(Number(target.dataset.eventOfferId));
     }
 
-    this._state.offers.push(Number(target.dataset.eventOfferId));
+    this._setState({
+      offers: [...availableOffers],
+    });
   };
 
   #eventTypeChangeHandler = ({ target }) => {
-    const eventTypeList = this.element.querySelector('.event__type-list');
-    const currentEventTypeInput = eventTypeList.querySelector('.event__type-input[checked]');
-
-    if (currentEventTypeInput !== target) {
-      const eventTypeIcon = this.element.querySelector('.event__type-icon');
-      const eventTypeOutput = this.element.querySelector('.event__type-output');
-      const eventTypeToggle = this.element.querySelector('.event__type-toggle');
-
-      this.updateElement({
-        type: target.value,
-      });
-
-      eventTypeIcon.src = `img/icons/${target.value}.png`;
-      eventTypeOutput.textContent = target.value;
-      eventTypeToggle.checked = false;
-    }
-
-
-    this._state.offers.push(Number(target.dataset.eventOfferId));
+    this.updateElement({
+      type: target.value,
+    });
   };
 
   #eventDestinationChangeHandler = ({ target }) => {
@@ -265,11 +255,15 @@ export default class EventEditView extends AbstractStatefulView {
     }
 
     this._state.basePrice = Number(target.value);
+
+    this._setState({
+      basePrice: Number(target.value),
+    });
   };
 
   #setInnerHandlers = () => {
     this.element.querySelector('.event__available-offers')
-      .addEventListener('change', this.#availableToggleHandler);
+      .addEventListener('change', this.#availableOffersToggleHandler);
     this.element.querySelector('.event__type-list')
       .addEventListener('change', this.#eventTypeChangeHandler);
     this.element.querySelector('.event__input--destination')
