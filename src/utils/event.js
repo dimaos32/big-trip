@@ -8,8 +8,8 @@ const MINUTES_IN_HOURS = 60;
 const SECONDS_IN_MINUTES = 60;
 
 const MAX_DAYS_GAP = 3;
-const MIN_HOURS_DURATION = 1;
-const MAX_HOURS_DURATION = 12;
+const MIN_HOURS_DURATION = 0;
+const MAX_HOURS_DURATION = 48;
 
 const MAX_SECONDS_GAP = MAX_DAYS_GAP * HOURS_IN_DAY * MINUTES_IN_HOURS * SECONDS_IN_MINUTES;
 const MIN_SECONDS_DURATION = MIN_HOURS_DURATION * MINUTES_IN_HOURS * SECONDS_IN_MINUTES;
@@ -20,8 +20,6 @@ const humanizeEventDate = (dueDate, isSimple = false) =>
     ? dayjs(dueDate).format('MMM D')
     : dayjs(dueDate).format('D MMMM');
 const humanizeEventtime = (dueDate) => dayjs(dueDate).format('HH:mm');
-
-const humanizeDateAndTime = (dueDate) => dayjs(dueDate).format('DD/MM/YY HH:mm');
 
 const isNotStartedEvent = (dueDate) => dueDate && dayjs().isBefore(dueDate, 'Day');
 const isEndedEvent = (dueDate) => dueDate && dayjs().isAfter(dueDate, 'Day');
@@ -51,6 +49,6 @@ const sortByTime = (eventA, eventB) => (eventB.dateTo - eventB.dateFrom) - (even
 const sortByPrice = (eventA, eventB) => eventB.basePrice - eventA.basePrice;
 
 export {
-  humanizeEventDate, humanizeEventtime, humanizeDateAndTime, isNotStartedEvent, isEndedEvent,
+  humanizeEventDate, humanizeEventtime, isNotStartedEvent, isEndedEvent,
   getTimeDuration, generatePeriod, sortByDate, sortByTime, sortByPrice,
 };
