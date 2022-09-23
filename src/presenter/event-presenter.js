@@ -2,6 +2,8 @@ import { render, replace, remove } from '../framework/render';
 
 import { getOffersByType} from '../mock/offers-by-type';
 
+import { UserAction, UpdateType } from '../const';
+
 import { isEscEvent } from '../utils/common';
 
 import EventEditView from '../view/event-edit-view';
@@ -106,7 +108,11 @@ export default class EventPresenter {
   };
 
   #handleFavoriteClick = () => {
-    this.#changeData({...this.#event, isFavorite: !this.#event.isFavorite});
+    this.#changeData(
+      UserAction.UPDATE_EVENT,
+      UpdateType.PATCH,
+      {...this.#event, isFavorite: !this.#event.isFavorite},
+    );
   };
 
   #handleCancelEditClick = () => {
@@ -115,7 +121,11 @@ export default class EventPresenter {
   };
 
   #handleFormSubmit = (event) => {
-    this.#changeData(event);
+    this.#changeData(
+      UserAction.UPDATE_EVENT,
+      UpdateType.MAJOR,
+      event,
+    );
     this.#deactivateEditEvent();
   };
 }

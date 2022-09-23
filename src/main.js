@@ -9,9 +9,9 @@ const tripFilterElement = tripControlsElement.querySelector('.trip-controls__fil
 const siteMainElement = document.querySelector('.page-main');
 const tripEventsElement = siteMainElement.querySelector('.trip-events');
 
-const eventsPresenter = new EventsPresenter();
 const eventsModel = new EventsModel();
 const offersModel = new OffersModel();
 const destinationsModel = new DestinationsModel();
+const eventsPresenter = new EventsPresenter(tripFilterElement, tripEventsElement, eventsModel, offersModel, destinationsModel);
 
-eventsPresenter.init(tripFilterElement, tripEventsElement, eventsModel, offersModel, destinationsModel);
+eventsPresenter.init();
