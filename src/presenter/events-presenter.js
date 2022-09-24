@@ -1,7 +1,5 @@
 import { render, remove } from '../framework/render';
 
-import { generateFilter } from '../mock/filter';
-
 import { FilterType, SortType, UpdateType, UserAction } from '../const';
 
 import { sortByDate, sortByTime, sortByPrice } from '../utils/event';
@@ -12,6 +10,7 @@ import SortView from '../view/sort-view';
 import EventsListView from '../view/events-list-view';
 import noEventsView from '../view/no-events-view';
 import EventPresenter from './event-presenter';
+import EventNewPresenter from './event-new-presenter';
 
 export default class EventsPresenter {
   #filterContainer = null;
@@ -24,7 +23,6 @@ export default class EventsPresenter {
 
   #offers = null;
   #destinations = null;
-  #filter = null;
 
   #filterPresenter = null;
   #sortComponent = null;
@@ -34,6 +32,7 @@ export default class EventsPresenter {
   #currentFilterType = FilterType.EVERYTHING;
   #currentSortType = SortType.DATE_UP;
   #eventPresenter = new Map();
+  #eventNewPresenter = null;
 
   constructor(
     filterContainer, eventsContainer,
@@ -47,8 +46,11 @@ export default class EventsPresenter {
     this.#destinationsModel = destinationsModel;
     this.#offers = [...this.#offersModel.offers];
     this.#destinations = [...this.#destinationsModel.destinations];
-    this.#filter = generateFilter(this.events);
     this.#filterPresenter = new FilterPresenter(this.#filterContainer, this.#filterModel, this.#eventsModel);
+    this.#eventNewPresenter = new EventNewPresenter(
+      this.#eventsComponent.element, this.#offers,
+      this.#destinations, this.#handleViewAction
+    );
 
     this.#eventsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
@@ -76,7 +78,14 @@ export default class EventsPresenter {
     this.#renderEventsBoard();
   };
 
+  createEvent = (callback) => {
+    this.#currentSortType = SortType.DEFAULT;
+    this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+    this.#eventNewPresenter.init(callback);
+  };
+
   #handleModeChange = () => {
+    this.#eventNewPresenter.destroy();
     this.#eventPresenter.forEach((presenter) => presenter.resetView());
   };
 
@@ -160,6 +169,7 @@ export default class EventsPresenter {
   };
 
   #clearEventsBoard = () => {
+    this.#eventNewPresenter.destroy();
     this.#eventPresenter.forEach((presenter) => presenter.destroy());
     this.#eventPresenter.clear();
     remove(this.#sortComponent);

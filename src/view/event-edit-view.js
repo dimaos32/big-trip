@@ -7,7 +7,11 @@ import 'flatpickr/dist/flatpickr.min.css';
 
 const createEventEditFormTemplate = (event, offersData, destinationsData, offersByTypeData) => {
   const { basePrice, destination, id, offers, type } = event;
-  const { description, name, pictures } = destinationsData.find((el) => (el.id === destination));
+
+  const currentDestination = destinationsData.find((el) => (el.id === destination));
+  const description = currentDestination ? currentDestination.description : '';
+  const name = currentDestination ? currentDestination.name : '';
+  const pictures = currentDestination ? currentDestination.pictures : [];
 
   const offersByType = offersByTypeData.find((offer) => offer.type === event.type) || [];
 
