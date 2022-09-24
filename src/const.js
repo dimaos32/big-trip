@@ -5,11 +5,11 @@ const FilterType = {
 };
 
 const SORT_TYPES = [
-  { text: 'Day', type: 'day', isEnabled: true },
-  { text: 'Event', type: 'event' },
-  { text: 'Time', type: 'time', isEnabled: true },
-  { text: 'Price', type: 'price', isEnabled: true },
-  { text: 'Offers', type: 'offer' },
+  { name: 'Day', type: 'day', isEnabled: true },
+  { name: 'Event', type: 'event' },
+  { name: 'Time', type: 'time', isEnabled: true },
+  { name: 'Price', type: 'price', isEnabled: true },
+  { name: 'Offers', type: 'offer' },
 ];
 
 const Message = {

@@ -1,12 +1,13 @@
 import { render, remove } from '../framework/render';
 
-import { SortType, UpdateType, UserAction } from '../const';
-
 import { generateFilter } from '../mock/filter';
 
-import { sortByDate, sortByTime, sortByPrice } from '../utils/event';
+import { FilterType, SortType, UpdateType, UserAction } from '../const';
 
-import FilterView from '../view/filter-view';
+import { sortByDate, sortByTime, sortByPrice } from '../utils/event';
+import { filter } from '../utils/filter';
+
+import FilterPresenter from '../presenter/filter-presenter.js';
 import SortView from '../view/sort-view';
 import EventsListView from '../view/events-list-view';
 import noEventsView from '../view/no-events-view';
@@ -16,6 +17,7 @@ export default class EventsPresenter {
   #filterContainer = null;
   #eventsContainer = null;
 
+  #filterModel = null;
   #eventsModel = null;
   #offersModel = null;
   #destinationsModel = null;
@@ -24,38 +26,48 @@ export default class EventsPresenter {
   #destinations = null;
   #filter = null;
 
-  #filterComponent = null;
+  #filterPresenter = null;
   #sortComponent = null;
   #eventsComponent = new EventsListView();
   #noEventsComponent = new noEventsView();
 
-  #eventPresenter = new Map();
+  #currentFilterType = FilterType.EVERYTHING;
   #currentSortType = SortType.DATE_UP;
+  #eventPresenter = new Map();
 
-  constructor(filterContainer, eventsContainer, eventsModel, offersModel, destinationsModel) {
+  constructor(
+    filterContainer, eventsContainer,
+    filterModel, eventsModel, offersModel, destinationsModel,
+  ) {
     this.#filterContainer = filterContainer;
     this.#eventsContainer = eventsContainer;
+    this.#filterModel = filterModel;
     this.#eventsModel = eventsModel;
     this.#offersModel = offersModel;
     this.#destinationsModel = destinationsModel;
     this.#offers = [...this.#offersModel.offers];
     this.#destinations = [...this.#destinationsModel.destinations];
     this.#filter = generateFilter(this.events);
-    this.#filterComponent = new FilterView(this.#filter);
+    this.#filterPresenter = new FilterPresenter(this.#filterContainer, this.#filterModel, this.#eventsModel);
 
     this.#eventsModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   get events() {
+    const filterType = this.#filterModel.filter;
+    const events = this.#eventsModel.events;
+    const filteredEvents = filter[filterType](events);
+
     switch (this.#currentSortType) {
       case SortType.DATE_UP:
-        return [...this.#eventsModel.events].sort(sortByDate);
+        return filteredEvents.sort(sortByDate);
       case SortType.TIME_UP:
-        return [...this.#eventsModel.events].sort(sortByTime);
+        return filteredEvents.sort(sortByTime);
       case SortType.PRICE_UP:
-        return [...this.#eventsModel.events].sort(sortByPrice);
+        return filteredEvents.sort(sortByPrice);
       default:
-        return this.#eventsModel.events;
+        return filteredEvents;
     }
   }
 
@@ -106,7 +118,7 @@ export default class EventsPresenter {
   };
 
   #renderFilter = () => {
-    render(this.#filterComponent, this.#filterContainer);
+    this.#filterPresenter.init();
   };
 
   #renderSort = () => {
