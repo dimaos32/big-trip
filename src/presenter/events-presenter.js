@@ -29,7 +29,7 @@ export default class EventsPresenter {
   #filterPresenter = null;
   #sortComponent = null;
   #eventsComponent = new EventsListView();
-  #noEventsComponent = new noEventsView();
+  #noEventsComponent = null;
 
   #currentFilterType = FilterType.EVERYTHING;
   #currentSortType = SortType.DATE_UP;
@@ -55,9 +55,9 @@ export default class EventsPresenter {
   }
 
   get events() {
-    const filterType = this.#filterModel.filter;
+    this.#currentFilterType = this.#filterModel.filter;
     const events = this.#eventsModel.events;
-    const filteredEvents = filter[filterType](events);
+    const filteredEvents = filter[this.#currentFilterType](events);
 
     switch (this.#currentSortType) {
       case SortType.DATE_UP:
@@ -145,6 +145,7 @@ export default class EventsPresenter {
   };
 
   #renderNoEvents = () => {
+    this.#noEventsComponent = new noEventsView(this.#currentFilterType);
     render(this.#noEventsComponent, this.#eventsContainer);
   };
 
@@ -162,6 +163,7 @@ export default class EventsPresenter {
     this.#eventPresenter.forEach((presenter) => presenter.destroy());
     this.#eventPresenter.clear();
     remove(this.#sortComponent);
+    remove(this.#noEventsComponent);
     remove(this.#eventsComponent);
 
     this.currentSortType = SortType.DATE_UP;

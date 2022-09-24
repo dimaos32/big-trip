@@ -13,7 +13,11 @@ const SORT_TYPES = [
 ];
 
 const Message = {
-  NO_EVENTS: 'Click New Event to create your first point',
+  NO_EVENTS: {
+    everything: 'Click New Event to create your first point',
+    future: 'There are no future events now',
+    past: 'There are no past events now',
+  },
 };
 
 const SortType = {
