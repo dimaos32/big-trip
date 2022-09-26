@@ -1,3 +1,4 @@
+import he from 'he';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import dayjs from 'dayjs';
 
@@ -141,7 +142,7 @@ const createEventEditFormTemplate = (event, offersData, destinationsData, offers
           <label class="event__label  event__type-output" for="event-destination-${id}">
             ${type[0].toUpperCase()}${type.slice(1)}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-${id}" type="text" name="event-destination" value="${name}" list="destination-list-${id}">
+          <input class="event__input  event__input--destination" id="event-destination-${id}" type="text" name="event-destination" value="${he.encode(name)}" list="destination-list-${id}">
           ${generateEventDestinationOptions()}
         </div>
 

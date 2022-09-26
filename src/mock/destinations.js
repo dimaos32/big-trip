@@ -34,24 +34,9 @@ const destinations = [
     ],
   },
   {
-    'id': 2,
-    'description': 'Store',
-    'name': 'Store',
-    'pictures': [
-      {
-        'src': 'https://via.placeholder.com/300x200',
-        'description': 'Store',
-      },
-      {
-        'src': 'https://via.placeholder.com/300x200',
-        'description': 'Store',
-      },
-    ],
-  },
-  {
     'id': 3,
     'description': 'Just check-in',
-    'name': 'Check-in',
+    'name': '<Check-in1>\n',
     'pictures': [
       {
         'src': 'https://via.placeholder.com/300x200',
@@ -65,7 +50,7 @@ const destinations = [
   },
   {
     'id': 4,
-    'name': 'Check-in',
+    'name': '<Check-in2>',
     'pictures': [
       {
         'src': 'https://via.placeholder.com/300x200',
@@ -80,12 +65,12 @@ const destinations = [
   {
     'id': 5,
     'description': 'Just check-in',
-    'name': 'Check-in',
+    'name': '<Check-in3>',
     'pictures': [],
   },
   {
     'id': 6,
-    'name': 'Check-in',
+    'name': '<Check-in4>',
     'pictures': [],
   },
 ];
