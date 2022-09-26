@@ -1,3 +1,8 @@
+const EventEditViewMode = {
+  ADD: 'add',
+  EDIT: 'edit',
+};
+
 const FilterType = {
   EVERYTHING: 'everything',
   FUTURE: 'future',
@@ -38,4 +43,4 @@ const UpdateType = {
   MAJOR: 'MAJOR',
 };
 
-export { FilterType, SORT_TYPES, Message, SortType, UserAction, UpdateType };
+export { EventEditViewMode, FilterType, SORT_TYPES, Message, SortType, UserAction, UpdateType };

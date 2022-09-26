@@ -2,7 +2,7 @@ import { render, replace, remove } from '../framework/render';
 
 import { getOffersByType} from '../mock/offers-by-type';
 
-import { UserAction, UpdateType } from '../const';
+import { EventEditViewMode, UserAction, UpdateType } from '../const';
 
 import { isEscEvent } from '../utils/common';
 
@@ -44,7 +44,10 @@ export default class EventPresenter {
     const prevEventEditComponent = this.#eventEditComponent;
 
     this.#eventComponent = new EventView(this.#event, this.#offers, this.#destinations);
-    this.#eventEditComponent = new EventEditView(this.#event, this.#offers, this.#destinations, this.#offersByType);
+    this.#eventEditComponent = new EventEditView(
+      this.#event, this.#offers, this.#destinations, this.#offersByType,
+      EventEditViewMode.EDIT,
+    );
 
     this.#eventComponent.setEditClickHandler(this.#handleEditClick);
     this.#eventComponent.setFavoriteClickHandler(this.#handleFavoriteClick);

@@ -1,11 +1,12 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 
+import { EventEditViewMode } from '../const';
 import { getEventTypes } from '../mock/event-types';
 
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
-const createEventEditFormTemplate = (event, offersData, destinationsData, offersByTypeData) => {
+const createEventEditFormTemplate = (event, offersData, destinationsData, offersByTypeData, mode) => {
   const { basePrice, destination, id, offers, type } = event;
 
   const currentDestination = destinationsData.find((el) => (el.id === destination));
@@ -146,7 +147,8 @@ const createEventEditFormTemplate = (event, offersData, destinationsData, offers
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">Cancel</button>
+        ${mode === EventEditViewMode.ADD ? '<button class="event__reset-btn" type="reset">Cancel</button>' : ''}
+        ${mode === EventEditViewMode.EDIT ? '<button class="event__delete-btn" type="button">Delete</button>' : ''}
       </header>
       <section class="event__details">
         <section class="event__section  event__section--offers">
@@ -170,23 +172,28 @@ export default class EventEditView extends AbstractStatefulView {
   #offers = null;
   #destinations = null;
   #offersByType = null;
+  #mode = null;
 
   #datepickerFrom = null;
   #datepickerTo = null;
 
-  constructor(event, offers, destinations, offersByType) {
+  #saveBtnElement = null;
+
+  constructor(event, offers, destinations, offersByType, mode) {
     super();
     this._state = EventEditView.parseEventToState(event);
     this.#offers = offers;
     this.#destinations = destinations;
     this.#offersByType = offersByType;
+    this.#mode = mode;
 
     this.#setInnerHandlers();
     this.#setDatepickers();
+    this.#setSaveBtnState();
   }
 
   get template() {
-    return createEventEditFormTemplate(this._state, this.#offers, this.#destinations, this.#offersByType);
+    return createEventEditFormTemplate(this._state, this.#offers, this.#destinations, this.#offersByType, this.#mode);
   }
 
   removeElement = () => {
@@ -218,8 +225,11 @@ export default class EventEditView extends AbstractStatefulView {
 
   setCancelEditClickHandler = (callback) => {
     this._callback.click = callback;
-    this.element.querySelector('.event__reset-btn')
-      .addEventListener('click', this.#clickHandler);
+
+    if (this.element.querySelector('.event__reset-btn')) {
+      this.element.querySelector('.event__reset-btn')
+        .addEventListener('click', this.#clickHandler);
+    }
   };
 
   setFormSubmitHandler = (callback) => {
@@ -260,15 +270,16 @@ export default class EventEditView extends AbstractStatefulView {
 
   #eventDestinationChangeHandler = ({ target }) => {
     const newDestination = this.#destinations.find((el) => el.name === target.value);
+    const saveBtnElement = this.element.querySelector('.event__save-btn');
 
     if (newDestination) {
       this.updateElement({
         destination: newDestination.id,
       });
-    } else {
-      const oldDestination = this.#destinations.find((el) => el.id === this._state.destination);
 
-      target.value = oldDestination ? oldDestination.name : '';
+      saveBtnElement.disabled = false;
+    } else {
+      saveBtnElement.disabled = true;
     }
   };
 
@@ -327,6 +338,15 @@ export default class EventEditView extends AbstractStatefulView {
       .addEventListener('change', this.#eventDestinationChangeHandler);
     this.element.querySelector('.event__input--price')
       .addEventListener('change', this.#eventPriceChangeHandler);
+  };
+
+  #setSaveBtnState = () => {
+    const destinationElement = this.element.querySelector('.event__input--destination');
+    const saveBtnElement = this.element.querySelector('.event__save-btn');
+
+    if (!destinationElement.value) {
+      saveBtnElement.disabled = true;
+    }
   };
 
   static parseEventToState = (event) => ({

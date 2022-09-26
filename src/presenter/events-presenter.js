@@ -79,7 +79,7 @@ export default class EventsPresenter {
   };
 
   createEvent = (callback) => {
-    this.#currentSortType = SortType.DEFAULT;
+    this.#currentSortType = SortType.DATE_UP;
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
     this.#eventNewPresenter.init(callback);
   };
@@ -150,7 +150,7 @@ export default class EventsPresenter {
   #renderEvents = () => {
     render(this.#eventsComponent, this.#eventsContainer);
 
-    this.events.forEach((event) => this.#renderEvent(event));
+    this.events.forEach(this.#renderEvent);
   };
 
   #renderNoEvents = () => {
@@ -160,6 +160,7 @@ export default class EventsPresenter {
 
   #renderEventsBoard = () => {
     if (!this.events.length) {
+      this.#renderEvents();
       this.#renderNoEvents();
       return;
     }
@@ -172,9 +173,12 @@ export default class EventsPresenter {
     this.#eventNewPresenter.destroy();
     this.#eventPresenter.forEach((presenter) => presenter.destroy());
     this.#eventPresenter.clear();
+
     remove(this.#sortComponent);
-    remove(this.#noEventsComponent);
-    remove(this.#eventsComponent);
+
+    if (this.#noEventsComponent) {
+      remove(this.#noEventsComponent);
+    }
 
     this.currentSortType = SortType.DATE_UP;
   };
