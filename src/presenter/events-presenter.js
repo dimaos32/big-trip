@@ -97,6 +97,9 @@ export default class EventsPresenter {
       case UserAction.ADD_EVENT:
         this.#eventsModel.addEvent(updateType, update);
         break;
+      case UserAction.REMOVE_EVENT:
+        this.#eventsModel.removeEvent(updateType, update);
+        break;
       default:
         throw new Error('Неизвестное пользовательское действие');
     }

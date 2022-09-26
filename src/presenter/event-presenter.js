@@ -51,6 +51,7 @@ export default class EventPresenter {
 
     this.#eventComponent.setEditClickHandler(this.#handleEditClick);
     this.#eventComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
+    this.#eventEditComponent.setDeleteEventHandler(this.#handleEventDeleteClick);
     this.#eventEditComponent.setCancelEditClickHandler(this.#handleCancelEditClick);
     this.#eventEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
 
@@ -118,16 +119,24 @@ export default class EventPresenter {
     );
   };
 
+  #handleEventDeleteClick = (update) => {
+    this.#changeData(
+      UserAction.REMOVE_EVENT,
+      UpdateType.MINOR,
+      update,
+    );
+  };
+
   #handleCancelEditClick = () => {
     this.#eventEditComponent.reset(this.#event);
     this.#deactivateEditEvent();
   };
 
-  #handleFormSubmit = (event) => {
+  #handleFormSubmit = (update) => {
     this.#changeData(
       UserAction.UPDATE_EVENT,
       UpdateType.MAJOR,
-      event,
+      update,
     );
     this.#deactivateEditEvent();
   };

@@ -49,4 +49,19 @@ export default class EventsModel extends Observable {
 
     this._notify(updateType, update);
   };
+
+  removeEvent = (updateType, update) => {
+    const index = this.#events.findIndex((event) => event.id === update.id);
+
+    if (index === -1) {
+      throw new Error('Невозможно удалить несуществующее событие');
+    }
+
+    this.#events = [
+      ...this.#events.slice(0, index),
+      ...this.#events.slice(index + 1),
+    ];
+
+    this._notify(updateType, update);
+  };
 }
