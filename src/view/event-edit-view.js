@@ -164,6 +164,7 @@ const createEventEditFormTemplate = (event, offersData, destinationsData, offers
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
         ${mode === EventEditViewMode.ADD ? '<button class="event__reset-btn" type="reset">Cancel</button>' : ''}
         ${mode === EventEditViewMode.EDIT ? '<button class="event__delete-btn" type="button">Delete</button>' : ''}
+        ${mode === EventEditViewMode.EDIT ? '<button class="event__rollup-btn" type="button"><span class="visually-hidden">Open event</span></button>' : ''}
       </header>
       <section class="event__details">
         ${generateOffersSection(currentOffers)}
@@ -231,10 +232,10 @@ export default class EventEditView extends AbstractStatefulView {
   setCancelEditClickHandler = (callback) => {
     this._callback.click = callback;
 
-    if (this.element.querySelector('.event__reset-btn')) {
-      this.element.querySelector('.event__reset-btn')
-        .addEventListener('click', this.#clickHandler);
-    }
+    this.element.querySelector('.event__reset-btn')
+      ?.addEventListener('click', this.#clickHandler);
+    this.element.querySelector('.event__rollup-btn')
+      ?.addEventListener('click', this.#clickHandler);
   };
 
   setFormSubmitHandler = (callback) => {
