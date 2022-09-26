@@ -22,7 +22,7 @@ const createEventEditFormTemplate = (event, offersData, destinationsData, offers
   const currentOffers = offersData.filter((offer) => currentOfferIds.includes(offer.id));
   const eventTypes = getEventTypes();
 
-  const generateOffersMarkup = (data) => {
+  const generateOffersSection = (data) => {
     const itemsMarkup = data
       .map((offer) => {
         const { id: offerId, title, price } = offer;
@@ -48,14 +48,20 @@ const createEventEditFormTemplate = (event, offersData, destinationsData, offers
       })
       .join('');
 
-    return (`
-      <div class="event__available-offers">
-        ${itemsMarkup}
-      </div>
-    `);
+    return data.length
+      ? (`
+          <section class="event__section  event__section--offers">
+            <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+
+            <div class="event__available-offers">
+              ${itemsMarkup}
+            </div>
+          </section>
+        `)
+      : '';
   };
 
-  const generatePhotosMarkup = (data) => {
+  const generateDestinationSection = (data) => {
     const itemsMarkup = data.reduce((acc, picture) => {
       const { src, description: altText} = picture;
 
@@ -65,13 +71,21 @@ const createEventEditFormTemplate = (event, offersData, destinationsData, offers
       `);
     }, '');
 
-    return (`
-      <div class="event__photos-container">
-        <div class="event__photos-tape">
-          ${itemsMarkup}
-        </div>
-      </div>
-    `);
+    return description || data.length
+      ? (`
+          <section class="event__section  event__section--destination">
+            <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+            ${description ? `<p class="event__destination-description">${description}</p>` : ''}
+
+
+            <div class="event__photos-container">
+              <div class="event__photos-tape">
+                ${itemsMarkup}
+              </div>
+            </div>
+          </section>
+        `)
+      : '';
   };
 
   const generateEventTypesListMarkup = (data) => {
@@ -152,18 +166,8 @@ const createEventEditFormTemplate = (event, offersData, destinationsData, offers
         ${mode === EventEditViewMode.EDIT ? '<button class="event__delete-btn" type="button">Delete</button>' : ''}
       </header>
       <section class="event__details">
-        <section class="event__section  event__section--offers">
-          <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-
-          ${generateOffersMarkup(currentOffers)}
-        </section>
-
-        <section class="event__section  event__section--destination">
-          <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-          <p class="event__destination-description">${description}</p>
-
-          ${generatePhotosMarkup(pictures)}
-        </section>
+        ${generateOffersSection(currentOffers)}
+        ${generateDestinationSection(pictures)}
       </section>
     </form>`
   );
@@ -341,7 +345,7 @@ export default class EventEditView extends AbstractStatefulView {
 
   #setInnerHandlers = () => {
     this.element.querySelector('.event__available-offers')
-      .addEventListener('change', this.#availableOffersToggleHandler);
+      ?.addEventListener('change', this.#availableOffersToggleHandler);
     this.element.querySelector('.event__type-list')
       .addEventListener('change', this.#eventTypeChangeHandler);
     this.element.querySelector('.event__input--destination')

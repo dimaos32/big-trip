@@ -45,6 +45,41 @@ const points = [
     offers: [2, 4],
     type: 'drive',
   },
+  {
+    basePrice: 12,
+    destination: 2,
+    isFavorite: false,
+    offers: [],
+    type: 'drive',
+  },
+  {
+    basePrice: 0,
+    destination: 3,
+    isFavorite: false,
+    offers: [],
+    type: 'check-in',
+  },
+  {
+    basePrice: 0,
+    destination: 4,
+    isFavorite: false,
+    offers: [],
+    type: 'check-in',
+  },
+  {
+    basePrice: 0,
+    destination: 5,
+    isFavorite: false,
+    offers: [],
+    type: 'check-in',
+  },
+  {
+    basePrice: 0,
+    destination: 6,
+    isFavorite: true,
+    offers: [],
+    type: 'check-in',
+  },
 ];
 
 const generateEvent = () => {

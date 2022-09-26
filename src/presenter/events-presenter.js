@@ -180,6 +180,6 @@ export default class EventsPresenter {
       remove(this.#noEventsComponent);
     }
 
-    this.currentSortType = SortType.DATE_UP;
+    this.#currentSortType = SortType.DATE_UP;
   };
 }
