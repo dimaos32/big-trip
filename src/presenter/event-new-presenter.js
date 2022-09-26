@@ -1,3 +1,7 @@
+import dayjs from 'dayjs';
+import duration from 'dayjs/plugin/duration';
+dayjs.extend(duration);
+
 import { render, remove } from '../framework/render';
 
 import {nanoid} from 'nanoid';
@@ -30,6 +34,8 @@ export default class EventNewPresenter {
       isFavorite: false,
       offers: [],
       type: this.#offersByType[0].type,
+      dateFrom: dayjs().valueOf(),
+      dateTo: dayjs().add(1, 'hours').valueOf(),
     };
 
     this.#eventsContainer = eventsContainer;

@@ -1,4 +1,5 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
+import dayjs from 'dayjs';
 
 import { EventEditViewMode } from '../const';
 import { getEventTypes } from '../mock/event-types';
@@ -323,10 +324,19 @@ export default class EventEditView extends AbstractStatefulView {
         dateFormat: 'd/m/y H:i',
         enableTime: true,
         'time_24hr': true,
+        minDate: this.#datepickerFrom.selectedDates[0],
         defaultDate: this._state.dateTo,
         onChange: this.#dateToChangeHandler,
       },
     );
+
+    this.#datepickerFrom.config.onChange.push(() => {
+      this.#datepickerTo.set('minDate', this.#datepickerFrom.selectedDates[0]);
+
+      if (dayjs(this.#datepickerFrom.selectedDates[0]).isAfter( dayjs(this.#datepickerTo.selectedDates[0]))) {
+        this.#datepickerTo.setDate(this.#datepickerFrom.selectedDates[0]);
+      }
+    });
   };
 
   #setInnerHandlers = () => {
