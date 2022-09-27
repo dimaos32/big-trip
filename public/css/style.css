@@ -674,7 +674,8 @@ main {
 .event__save-btn {
   margin-right: 18px; }
 
-.event__reset-btn {
+.event__reset-btn,
+.event__delete-btn {
   display: block;
   padding: 0;
   font-weight: 500;
@@ -691,9 +692,11 @@ main {
   cursor: pointer;
   -webkit-transition: opacity 0.2s;
   transition: opacity 0.2s; }
-  .event__reset-btn:hover {
+  .event__reset-btn:hover,
+  .event__delete-btn:hover {
     opacity: 0.8; }
-  .event__reset-btn:active {
+  .event__reset-btn:active,
+  .event__delete-btn:hover {
     opacity: 0.6; }
 
 .event__favorite-btn {

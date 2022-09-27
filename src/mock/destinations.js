@@ -33,6 +33,46 @@ const destinations = [
       },
     ],
   },
+  {
+    'id': 3,
+    'description': 'Just check-in',
+    'name': '<Check-in1>\n',
+    'pictures': [
+      {
+        'src': 'https://via.placeholder.com/300x200',
+        'description': 'Check-in',
+      },
+      {
+        'src': 'https://via.placeholder.com/300x200',
+        'description': 'Check-in',
+      },
+    ],
+  },
+  {
+    'id': 4,
+    'name': '<Check-in2>',
+    'pictures': [
+      {
+        'src': 'https://via.placeholder.com/300x200',
+        'description': 'Check-in',
+      },
+      {
+        'src': 'https://via.placeholder.com/300x200',
+        'description': 'Check-in',
+      },
+    ],
+  },
+  {
+    'id': 5,
+    'description': 'Just check-in',
+    'name': '<Check-in3>',
+    'pictures': [],
+  },
+  {
+    'id': 6,
+    'name': '<Check-in4>',
+    'pictures': [],
+  },
 ];
 
 const getDestinations = () => destinations;

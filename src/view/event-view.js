@@ -1,3 +1,4 @@
+import he from 'he';
 import AbstractView from '../framework/view/abstract-view';
 
 import { humanizeEventDate, humanizeEventtime, getTimeDuration } from '../utils/event';
@@ -43,7 +44,7 @@ const createEventTemplate = (event, offersData, destinationsData) => {
         <div class="event__type">
           <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
         </div>
-        <h3 class="event__title">${type[0].toUpperCase()}${type.slice(1)} ${name}</h3>
+        <h3 class="event__title">${type[0].toUpperCase()}${type.slice(1)} ${he.encode(name)}</h3>
         <div class="event__schedule">
           <p class="event__time">
             <time class="event__start-time" datetime="${dateFrom}">${humanizedTimeFrom}</time>

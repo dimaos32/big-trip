@@ -1,13 +1,20 @@
+import he from 'he';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
+import dayjs from 'dayjs';
 
+import { EventEditViewMode } from '../const';
 import { getEventTypes } from '../mock/event-types';
 
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
-const createEventEditFormTemplate = (event, offersData, destinationsData, offersByTypeData) => {
+const createEventEditFormTemplate = (event, offersData, destinationsData, offersByTypeData, mode) => {
   const { basePrice, destination, id, offers, type } = event;
-  const { description, name, pictures } = destinationsData.find((el) => (el.id === destination));
+
+  const currentDestination = destinationsData.find((el) => (el.id === destination));
+  const description = currentDestination ? currentDestination.description : '';
+  const name = currentDestination ? currentDestination.name : '';
+  const pictures = currentDestination ? currentDestination.pictures : [];
 
   const offersByType = offersByTypeData.find((offer) => offer.type === event.type) || [];
 
@@ -16,7 +23,7 @@ const createEventEditFormTemplate = (event, offersData, destinationsData, offers
   const currentOffers = offersData.filter((offer) => currentOfferIds.includes(offer.id));
   const eventTypes = getEventTypes();
 
-  const generateOffersMarkup = (data) => {
+  const generateOffersSection = (data) => {
     const itemsMarkup = data
       .map((offer) => {
         const { id: offerId, title, price } = offer;
@@ -42,14 +49,20 @@ const createEventEditFormTemplate = (event, offersData, destinationsData, offers
       })
       .join('');
 
-    return (`
-      <div class="event__available-offers">
-        ${itemsMarkup}
-      </div>
-    `);
+    return data.length
+      ? (`
+          <section class="event__section  event__section--offers">
+            <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+
+            <div class="event__available-offers">
+              ${itemsMarkup}
+            </div>
+          </section>
+        `)
+      : '';
   };
 
-  const generatePhotosMarkup = (data) => {
+  const generateDestinationSection = (data) => {
     const itemsMarkup = data.reduce((acc, picture) => {
       const { src, description: altText} = picture;
 
@@ -59,13 +72,21 @@ const createEventEditFormTemplate = (event, offersData, destinationsData, offers
       `);
     }, '');
 
-    return (`
-      <div class="event__photos-container">
-        <div class="event__photos-tape">
-          ${itemsMarkup}
-        </div>
-      </div>
-    `);
+    return description || data.length
+      ? (`
+          <section class="event__section  event__section--destination">
+            <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+            ${description ? `<p class="event__destination-description">${description}</p>` : ''}
+
+
+            <div class="event__photos-container">
+              <div class="event__photos-tape">
+                ${itemsMarkup}
+              </div>
+            </div>
+          </section>
+        `)
+      : '';
   };
 
   const generateEventTypesListMarkup = (data) => {
@@ -121,7 +142,7 @@ const createEventEditFormTemplate = (event, offersData, destinationsData, offers
           <label class="event__label  event__type-output" for="event-destination-${id}">
             ${type[0].toUpperCase()}${type.slice(1)}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-${id}" type="text" name="event-destination" value="${name}" list="destination-list-${id}">
+          <input class="event__input  event__input--destination" id="event-destination-${id}" type="text" name="event-destination" value="${he.encode(name)}" list="destination-list-${id}">
           ${generateEventDestinationOptions()}
         </div>
 
@@ -142,21 +163,13 @@ const createEventEditFormTemplate = (event, offersData, destinationsData, offers
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">Cancel</button>
+        ${mode === EventEditViewMode.ADD ? '<button class="event__reset-btn" type="reset">Cancel</button>' : ''}
+        ${mode === EventEditViewMode.EDIT ? '<button class="event__delete-btn" type="button">Delete</button>' : ''}
+        ${mode === EventEditViewMode.EDIT ? '<button class="event__rollup-btn" type="button"><span class="visually-hidden">Open event</span></button>' : ''}
       </header>
       <section class="event__details">
-        <section class="event__section  event__section--offers">
-          <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-
-          ${generateOffersMarkup(currentOffers)}
-        </section>
-
-        <section class="event__section  event__section--destination">
-          <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-          <p class="event__destination-description">${description}</p>
-
-          ${generatePhotosMarkup(pictures)}
-        </section>
+        ${generateOffersSection(currentOffers)}
+        ${generateDestinationSection(pictures)}
       </section>
     </form>`
   );
@@ -166,23 +179,28 @@ export default class EventEditView extends AbstractStatefulView {
   #offers = null;
   #destinations = null;
   #offersByType = null;
+  #mode = null;
 
   #datepickerFrom = null;
   #datepickerTo = null;
 
-  constructor(event, offers, destinations, offersByType) {
+  #saveBtnElement = null;
+
+  constructor(event, offers, destinations, offersByType, mode) {
     super();
     this._state = EventEditView.parseEventToState(event);
     this.#offers = offers;
     this.#destinations = destinations;
     this.#offersByType = offersByType;
+    this.#mode = mode;
 
     this.#setInnerHandlers();
     this.#setDatepickers();
+    this.#setSaveBtnState();
   }
 
   get template() {
-    return createEventEditFormTemplate(this._state, this.#offers, this.#destinations, this.#offersByType);
+    return createEventEditFormTemplate(this._state, this.#offers, this.#destinations, this.#offersByType, this.#mode);
   }
 
   removeElement = () => {
@@ -208,19 +226,35 @@ export default class EventEditView extends AbstractStatefulView {
   _restoreHandlers = () => {
     this.#setInnerHandlers();
     this.#setDatepickers();
+    this.setDeleteEventHandler(this._callback.deleteClick);
     this.setCancelEditClickHandler(this._callback.click);
     this.setFormSubmitHandler(this._callback.formSubmit);
   };
 
+  setDeleteEventHandler = (callback) => {
+    this._callback.deleteClick = callback;
+
+    this.element.querySelector('.event__delete-btn')
+      ?.addEventListener('click', this.#deleteEventHandler);
+  };
+
   setCancelEditClickHandler = (callback) => {
     this._callback.click = callback;
+
     this.element.querySelector('.event__reset-btn')
-      .addEventListener('click', this.#clickHandler);
+      ?.addEventListener('click', this.#clickHandler);
+    this.element.querySelector('.event__rollup-btn')
+      ?.addEventListener('click', this.#clickHandler);
   };
 
   setFormSubmitHandler = (callback) => {
     this._callback.formSubmit = callback;
     this.element.addEventListener('submit', this.#submitHandler);
+  };
+
+  #deleteEventHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.deleteClick(EventEditView.parseStateToEvent(this._state));
   };
 
   #clickHandler = (evt) => {
@@ -256,15 +290,16 @@ export default class EventEditView extends AbstractStatefulView {
 
   #eventDestinationChangeHandler = ({ target }) => {
     const newDestination = this.#destinations.find((el) => el.name === target.value);
+    const saveBtnElement = this.element.querySelector('.event__save-btn');
 
     if (newDestination) {
       this.updateElement({
         destination: newDestination.id,
       });
-    } else {
-      const oldDestination = this.#destinations.find((el) => el.id === this._state.destination);
 
-      target.value = oldDestination ? oldDestination.name : '';
+      saveBtnElement.disabled = false;
+    } else {
+      saveBtnElement.disabled = true;
     }
   };
 
@@ -308,21 +343,39 @@ export default class EventEditView extends AbstractStatefulView {
         dateFormat: 'd/m/y H:i',
         enableTime: true,
         'time_24hr': true,
+        minDate: this.#datepickerFrom.selectedDates[0],
         defaultDate: this._state.dateTo,
         onChange: this.#dateToChangeHandler,
       },
     );
+
+    this.#datepickerFrom.config.onChange.push(() => {
+      this.#datepickerTo.set('minDate', this.#datepickerFrom.selectedDates[0]);
+
+      if (dayjs(this.#datepickerFrom.selectedDates[0]).isAfter( dayjs(this.#datepickerTo.selectedDates[0]))) {
+        this.#datepickerTo.setDate(this.#datepickerFrom.selectedDates[0]);
+      }
+    });
   };
 
   #setInnerHandlers = () => {
     this.element.querySelector('.event__available-offers')
-      .addEventListener('change', this.#availableOffersToggleHandler);
+      ?.addEventListener('change', this.#availableOffersToggleHandler);
     this.element.querySelector('.event__type-list')
       .addEventListener('change', this.#eventTypeChangeHandler);
     this.element.querySelector('.event__input--destination')
       .addEventListener('change', this.#eventDestinationChangeHandler);
     this.element.querySelector('.event__input--price')
       .addEventListener('change', this.#eventPriceChangeHandler);
+  };
+
+  #setSaveBtnState = () => {
+    const destinationElement = this.element.querySelector('.event__input--destination');
+    const saveBtnElement = this.element.querySelector('.event__save-btn');
+
+    if (!destinationElement.value) {
+      saveBtnElement.disabled = true;
+    }
   };
 
   static parseEventToState = (event) => ({
