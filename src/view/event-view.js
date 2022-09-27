@@ -11,13 +11,15 @@ const createEventTemplate = (event, offersData, destinationsData) => {
   const humanizedTimeTo = humanizeEventtime(dateTo);
 
   const name = destinationsData.find((el) => (el.id === destination)).name;
+  const targetType = offersData.find((el) => (el.type === type));
 
   const favoriteBtnClass = `event__favorite-btn${isFavorite ? ' event__favorite-btn--active' : ''}`;
 
   const generateSelectedOffersListMarkup = (data) => {
     const itemsMarkup = data
       .map((offer) => {
-        const selectedOffer = offersData.find((el) => (el.id === offer));
+
+        const selectedOffer = targetType.offers.find((el) => (el.id === offer));
         const { title, price } = selectedOffer;
 
         return (
@@ -76,8 +78,6 @@ export default class EventView extends AbstractView {
   #event = null;
   #offers = null;
   #destinations = null;
-
-  #element = null;
 
   constructor(event, offers, destinations) {
     super();

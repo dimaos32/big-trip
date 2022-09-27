@@ -9,6 +9,7 @@ import FilterPresenter from '../presenter/filter-presenter.js';
 import SortView from '../view/sort-view';
 import EventsListView from '../view/events-list-view';
 import noEventsView from '../view/no-events-view';
+import LoadingView from '../view/loading-view.js';
 import EventPresenter from './event-presenter';
 import EventNewPresenter from './event-new-presenter';
 
@@ -18,39 +19,25 @@ export default class EventsPresenter {
 
   #filterModel = null;
   #eventsModel = null;
-  #offersModel = null;
-  #destinationsModel = null;
-
-  #offers = null;
-  #destinations = null;
 
   #filterPresenter = null;
   #sortComponent = null;
   #eventsComponent = new EventsListView();
   #noEventsComponent = null;
+  #loadingComponent = new LoadingView();
 
   #currentFilterType = FilterType.EVERYTHING;
   #currentSortType = SortType.DATE_UP;
   #eventPresenter = new Map();
   #eventNewPresenter = null;
+  #isLoading = true;
 
-  constructor(
-    filterContainer, eventsContainer,
-    filterModel, eventsModel, offersModel, destinationsModel,
-  ) {
+  constructor(filterContainer, eventsContainer, filterModel, eventsModel) {
     this.#filterContainer = filterContainer;
     this.#eventsContainer = eventsContainer;
     this.#filterModel = filterModel;
     this.#eventsModel = eventsModel;
-    this.#offersModel = offersModel;
-    this.#destinationsModel = destinationsModel;
-    this.#offers = [...this.#offersModel.offers];
-    this.#destinations = [...this.#destinationsModel.destinations];
     this.#filterPresenter = new FilterPresenter(this.#filterContainer, this.#filterModel, this.#eventsModel);
-    this.#eventNewPresenter = new EventNewPresenter(
-      this.#eventsComponent.element, this.#offers,
-      this.#destinations, this.#handleViewAction
-    );
 
     this.#eventsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
@@ -79,13 +66,22 @@ export default class EventsPresenter {
   };
 
   createEvent = (callback) => {
+    this.#eventNewPresenter = new EventNewPresenter(
+      this.#eventsComponent.element, this.#eventsModel.offers,
+      this.#eventsModel.destinations, this.#handleViewAction
+    );
+
     this.#currentSortType = SortType.DATE_UP;
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+
     this.#eventNewPresenter.init(callback);
   };
 
   #handleModeChange = () => {
-    this.#eventNewPresenter.destroy();
+    if (this.#eventNewPresenter) {
+      this.#eventNewPresenter.destroy();
+    }
+
     this.#eventPresenter.forEach((presenter) => presenter.resetView());
   };
 
@@ -118,6 +114,11 @@ export default class EventsPresenter {
         this.#clearEventsBoard();
         this.#renderEventsBoard();
         break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        this.#renderEventsBoard();
+        break;
       default:
         throw new Error('Неизвестный тип обновления');
     }
@@ -142,7 +143,7 @@ export default class EventsPresenter {
 
   #renderEvent = (event) => {
     const eventPresenter = new EventPresenter(
-      this.#eventsComponent.element, this.#offers, this.#destinations,
+      this.#eventsComponent.element, this.#eventsModel.offers, this.#eventsModel.destinations,
       this.#handleViewAction, this.#handleModeChange
     );
 
@@ -161,7 +162,17 @@ export default class EventsPresenter {
     render(this.#noEventsComponent, this.#eventsContainer);
   };
 
+  #renderLoading = () => {
+    render(this.#loadingComponent, this.#eventsContainer, 'afterbegin');
+  };
+
   #renderEventsBoard = () => {
+    if (this.#isLoading) {
+      this.#renderEvents();
+      this.#renderLoading();
+      return;
+    }
+
     if (!this.events.length) {
       this.#renderEvents();
       this.#renderNoEvents();
@@ -173,11 +184,15 @@ export default class EventsPresenter {
   };
 
   #clearEventsBoard = () => {
-    this.#eventNewPresenter.destroy();
+    if (this.#eventNewPresenter) {
+      this.#eventNewPresenter.destroy();
+    }
+
     this.#eventPresenter.forEach((presenter) => presenter.destroy());
     this.#eventPresenter.clear();
 
     remove(this.#sortComponent);
+    remove(this.#loadingComponent);
 
     if (this.#noEventsComponent) {
       remove(this.#noEventsComponent);

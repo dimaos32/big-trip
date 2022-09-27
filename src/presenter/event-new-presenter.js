@@ -6,8 +6,6 @@ import { render, remove } from '../framework/render';
 
 import {nanoid} from 'nanoid';
 
-import { getOffersByType} from '../mock/offers-by-type';
-
 import { EventEditViewMode, UserAction, UpdateType } from '../const';
 
 import { isEscEvent } from '../utils/common';
@@ -20,8 +18,6 @@ export default class EventNewPresenter {
   #destinations = null;
   #changeData = null;
 
-  #offersByType = getOffersByType();
-
   #eventEditComponent = null;
   #destroyCallback = null;
 
@@ -33,7 +29,7 @@ export default class EventNewPresenter {
       destination: null,
       isFavorite: false,
       offers: [],
-      type: this.#offersByType[0].type,
+      type: 'train',
       dateFrom: dayjs().valueOf(),
       dateTo: dayjs().add(1, 'hours').valueOf(),
     };
@@ -52,8 +48,7 @@ export default class EventNewPresenter {
     }
 
     this.#eventEditComponent = new EventEditView(
-      this.#event, this.#offers, this.#destinations, this.#offersByType,
-      EventEditViewMode.ADD,
+      this.#event, this.#offers, this.#destinations, EventEditViewMode.ADD,
     );
 
     this.#eventEditComponent.setCancelEditClickHandler(this.#handleCancelEditClick);
