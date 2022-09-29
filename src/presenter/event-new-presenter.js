@@ -4,8 +4,6 @@ dayjs.extend(duration);
 
 import { RenderPosition, render, remove } from '../framework/render';
 
-import {nanoid} from 'nanoid';
-
 import { EventEditViewMode, UserAction, UpdateType } from '../const';
 
 import { isEscEvent } from '../utils/common';
@@ -24,20 +22,20 @@ export default class EventNewPresenter {
   #event = null;
 
   constructor(eventsContainer, offers, destinations, changeData) {
+    this.#eventsContainer = eventsContainer;
+    this.#offers = offers;
+    this.#destinations = destinations;
+    this.#changeData = changeData;
+
     this.#event = {
       basePrice: 0,
       destination: null,
       isFavorite: false,
       offers: [],
-      type: 'train',
-      dateFrom: dayjs().valueOf(),
-      dateTo: dayjs().add(1, 'hours').valueOf(),
+      type: this.#offers ? this.#offers[0].type : 'taxi',
+      dateFrom: new Date(dayjs().valueOf()),
+      dateTo: new Date(dayjs().add(1, 'hours').valueOf()),
     };
-
-    this.#eventsContainer = eventsContainer;
-    this.#offers = offers;
-    this.#destinations = destinations;
-    this.#changeData = changeData;
   }
 
   init = (callback) => {
@@ -87,7 +85,7 @@ export default class EventNewPresenter {
     this.#changeData(
       UserAction.ADD_EVENT,
       UpdateType.MAJOR,
-      {id: nanoid(), ...event},
+      event,
     );
     this.destroy();
   };

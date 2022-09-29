@@ -1,5 +1,4 @@
 import he from 'he';
-import { nanoid } from 'nanoid';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import dayjs from 'dayjs';
 
@@ -25,19 +24,18 @@ const createEventEditFormTemplate = (event, offersData, destinationsData, mode) 
       .map((offer) => {
         const { id: offerId, title, price } = offer;
         const isChecked = offers.includes(offerId);
-        const inputId = nanoid();
 
         return (`
           <div class="event__offer-selector">
             <input
               class="event__offer-checkbox  visually-hidden"
-              id="${inputId}"
+              id="${id}-${offerId}"
               data-event-offer-id="${offerId}"
               type="checkbox"
               name="event-offer-${title.replace(/\s/g, '-').toLowerCase()}"
               ${isChecked ? 'checked' : ''}
             >
-            <label class="event__offer-label" for="${inputId}">
+            <label class="event__offer-label" for="${id}-${offerId}">
               <span class="event__offer-title">${title}</span>
               &plus;&euro;&nbsp;
               <span class="event__offer-price">${price}</span>
@@ -177,6 +175,7 @@ export default class EventEditView extends AbstractStatefulView {
   #offers = null;
   #destinations = null;
   #mode = null;
+  #isValid = true;
 
   #datepickerFrom = null;
   #datepickerTo = null;
@@ -285,17 +284,14 @@ export default class EventEditView extends AbstractStatefulView {
 
   #eventDestinationChangeHandler = ({ target }) => {
     const newDestination = this.#destinations.find((el) => el.name === target.value);
-    const saveBtnElement = this.element.querySelector('.event__save-btn');
 
     if (newDestination) {
       this.updateElement({
         destination: newDestination.id,
       });
-
-      saveBtnElement.disabled = false;
-    } else {
-      saveBtnElement.disabled = true;
     }
+
+    this.#setSaveBtnState();
   };
 
   #dateFromChangeHandler = ([newDate]) => {
@@ -311,13 +307,15 @@ export default class EventEditView extends AbstractStatefulView {
   };
 
   #eventPriceChangeHandler = ({ target }) => {
-    if (target.value === '') {
+    if (target.value === '' || Number(target.value) < 0) {
       target.value = '0';
     }
 
     this._setState({
       basePrice: Number(target.value),
     });
+
+    this.#setSaveBtnState();
   };
 
   #setDatepickers = () => {
@@ -366,11 +364,10 @@ export default class EventEditView extends AbstractStatefulView {
 
   #setSaveBtnState = () => {
     const destinationElement = this.element.querySelector('.event__input--destination');
+    const priceElement = this.element.querySelector('.event__input--price');
     const saveBtnElement = this.element.querySelector('.event__save-btn');
 
-    if (!destinationElement.value) {
-      saveBtnElement.disabled = true;
-    }
+    saveBtnElement.disabled = (!destinationElement.value || Number(priceElement.value) <= 0);
   };
 
   static parseEventToState = (event) => ({
