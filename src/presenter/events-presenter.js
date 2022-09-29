@@ -1,4 +1,4 @@
-import { render, remove } from '../framework/render';
+import { RenderPosition, render, remove } from '../framework/render';
 
 import { FilterType, SortType, UpdateType, UserAction } from '../const';
 
@@ -163,12 +163,11 @@ export default class EventsPresenter {
   };
 
   #renderLoading = () => {
-    render(this.#loadingComponent, this.#eventsContainer, 'afterbegin');
+    render(this.#loadingComponent, this.#eventsContainer, RenderPosition.AFTERBEGIN);
   };
 
   #renderEventsBoard = () => {
     if (this.#isLoading) {
-      this.#renderEvents();
       this.#renderLoading();
       return;
     }

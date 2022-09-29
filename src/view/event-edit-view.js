@@ -34,7 +34,7 @@ const createEventEditFormTemplate = (event, offersData, destinationsData, mode) 
               id="${inputId}"
               data-event-offer-id="${offerId}"
               type="checkbox"
-              name="event-offer-${title.replace(/ /g, '-').toLowerCase()}"
+              name="event-offer-${title.replace(/\s/g, '-').toLowerCase()}"
               ${isChecked ? 'checked' : ''}
             >
             <label class="event__offer-label" for="${inputId}">

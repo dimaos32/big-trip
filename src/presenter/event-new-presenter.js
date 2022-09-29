@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 dayjs.extend(duration);
 
-import { render, remove } from '../framework/render';
+import { RenderPosition, render, remove } from '../framework/render';
 
 import {nanoid} from 'nanoid';
 
@@ -54,7 +54,7 @@ export default class EventNewPresenter {
     this.#eventEditComponent.setCancelEditClickHandler(this.#handleCancelEditClick);
     this.#eventEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
 
-    render(this.#eventEditComponent, this.#eventsContainer, 'afterbegin');
+    render(this.#eventEditComponent, this.#eventsContainer, RenderPosition.AFTERBEGIN);
 
     document.addEventListener('keydown', this.#escKeyDownHandler);
   };

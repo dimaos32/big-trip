@@ -28,21 +28,13 @@ export default class EventsModel extends Observable {
     try {
       const events = await this.#eventsApiService.events;
       this.#events = events.map(this.#adaptEventToClient);
+      const destinations = await this.#eventsApiService.destinations;
+      this.#destinations = destinations;
+      const offers = await this.#eventsApiService.offers;
+      this.#offers = offers;
     } catch(err) {
       this.#events = [];
-    }
-
-    try {
-      const destinations = await this.#eventsApiService.destinations;
-      this.#destinations = destinations.map(this.#adaptDestinationToClient);
-    } catch(err) {
       this.#destinations = [];
-    }
-
-    try {
-      const offers = await this.#eventsApiService.offers;
-      this.#offers = offers.map(this.#adaptOffersToClient);
-    } catch(err) {
       this.#offers = [];
     }
 
@@ -68,7 +60,7 @@ export default class EventsModel extends Observable {
 
       this._notify(updateType, updatedEvent);
     } catch(err) {
-      throw new Error('Can\'t update event');
+      throw new Error(`Can't update event. Update ${update}. Error: ${err}`);
     }
   };
 
@@ -110,17 +102,5 @@ export default class EventsModel extends Observable {
     delete adaptedEvent['is_favorite'];
 
     return adaptedEvent;
-  };
-
-  #adaptDestinationToClient = (destination) => {
-    const adaptedDestination = { ...destination };
-
-    return adaptedDestination;
-  };
-
-  #adaptOffersToClient = (offer) => {
-    const adaptedOffer = { ...offer };
-
-    return adaptedOffer;
   };
 }
