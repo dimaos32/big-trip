@@ -1,7 +1,5 @@
 import { render, replace, remove } from '../framework/render';
 
-import { getOffersByType} from '../mock/offers-by-type';
-
 import { EventEditViewMode, UserAction, UpdateType } from '../const';
 
 import { isEscEvent } from '../utils/common';
@@ -20,8 +18,6 @@ export default class EventPresenter {
   #destinations = null;
   #changeData = null;
   #changeMode = null;
-
-  #offersByType = getOffersByType();
 
   #eventComponent = null;
   #eventEditComponent = null;
@@ -45,8 +41,7 @@ export default class EventPresenter {
 
     this.#eventComponent = new EventView(this.#event, this.#offers, this.#destinations);
     this.#eventEditComponent = new EventEditView(
-      this.#event, this.#offers, this.#destinations, this.#offersByType,
-      EventEditViewMode.EDIT,
+      this.#event, this.#offers, this.#destinations, EventEditViewMode.EDIT,
     );
 
     this.#eventComponent.setEditClickHandler(this.#handleEditClick);

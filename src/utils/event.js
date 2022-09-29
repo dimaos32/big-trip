@@ -1,19 +1,7 @@
-import { getRandomInteger } from './common';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 dayjs.extend(duration);
 
-const HOURS_IN_DAY = 24;
-const MINUTES_IN_HOURS = 60;
-const SECONDS_IN_MINUTES = 60;
-
-const MAX_DAYS_GAP = 3;
-const MIN_HOURS_DURATION = 0;
-const MAX_HOURS_DURATION = 48;
-
-const MAX_SECONDS_GAP = MAX_DAYS_GAP * HOURS_IN_DAY * MINUTES_IN_HOURS * SECONDS_IN_MINUTES;
-const MIN_SECONDS_DURATION = MIN_HOURS_DURATION * MINUTES_IN_HOURS * SECONDS_IN_MINUTES;
-const MAX_SECONDS_DURATION = MAX_HOURS_DURATION * MINUTES_IN_HOURS * SECONDS_IN_MINUTES;
 
 const humanizeEventDate = (dueDate, isSimple = false) =>
   isSimple
@@ -32,16 +20,6 @@ const getTimeDuration = (dateTo, dateFrom) =>
     .replace(/^00H /, '')
     .replace(/^0/, '');
 
-const generatePeriod = () => {
-  const secondsGaps = getRandomInteger(-MAX_SECONDS_GAP, MAX_SECONDS_GAP);
-  const EventDuration = getRandomInteger(MIN_SECONDS_DURATION, MAX_SECONDS_DURATION);
-
-  return [
-    dayjs().add(secondsGaps, 'second').toDate(),
-    dayjs().add(secondsGaps + EventDuration, 'second').toDate(),
-  ];
-};
-
 const sortByDate = (eventA, eventB) => dayjs(eventA.dateFrom).diff(dayjs(eventB.dateFrom));
 
 const sortByTime = (eventA, eventB) => (eventB.dateTo - eventB.dateFrom) - (eventA.dateTo - eventA.dateFrom);
@@ -50,5 +28,5 @@ const sortByPrice = (eventA, eventB) => eventB.basePrice - eventA.basePrice;
 
 export {
   humanizeEventDate, humanizeEventtime, isNotStartedEvent, isEndedEvent,
-  getTimeDuration, generatePeriod, sortByDate, sortByTime, sortByPrice,
+  getTimeDuration, sortByDate, sortByTime, sortByPrice,
 };

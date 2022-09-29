@@ -1,14 +1,14 @@
 import he from 'he';
+import { nanoid } from 'nanoid';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import dayjs from 'dayjs';
 
 import { EventEditViewMode } from '../const';
-import { getEventTypes } from '../mock/event-types';
 
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
-const createEventEditFormTemplate = (event, offersData, destinationsData, offersByTypeData, mode) => {
+const createEventEditFormTemplate = (event, offersData, destinationsData, mode) => {
   const { basePrice, destination, id, offers, type } = event;
 
   const currentDestination = destinationsData.find((el) => (el.id === destination));
@@ -16,30 +16,28 @@ const createEventEditFormTemplate = (event, offersData, destinationsData, offers
   const name = currentDestination ? currentDestination.name : '';
   const pictures = currentDestination ? currentDestination.pictures : [];
 
-  const offersByType = offersByTypeData.find((offer) => offer.type === event.type) || [];
+  const targetType = offersData.find((el) => (el.type === type));
 
-  const { offers: currentOfferIds = [] } = offersByType;
+  const generateOffersSection = () => {
+    const data = targetType ? targetType.offers : [];
 
-  const currentOffers = offersData.filter((offer) => currentOfferIds.includes(offer.id));
-  const eventTypes = getEventTypes();
-
-  const generateOffersSection = (data) => {
     const itemsMarkup = data
       .map((offer) => {
         const { id: offerId, title, price } = offer;
         const isChecked = offers.includes(offerId);
+        const inputId = nanoid();
 
         return (`
           <div class="event__offer-selector">
             <input
               class="event__offer-checkbox  visually-hidden"
-              id="event-offer-${offerId}"
+              id="${inputId}"
               data-event-offer-id="${offerId}"
               type="checkbox"
-              name="event-offer-luggage"
+              name="event-offer-${title.replace(/\s/g, '-').toLowerCase()}"
               ${isChecked ? 'checked' : ''}
             >
-            <label class="event__offer-label" for="event-offer-${offerId}">
+            <label class="event__offer-label" for="${inputId}">
               <span class="event__offer-title">${title}</span>
               &plus;&euro;&nbsp;
               <span class="event__offer-price">${price}</span>
@@ -89,15 +87,15 @@ const createEventEditFormTemplate = (event, offersData, destinationsData, offers
       : '';
   };
 
-  const generateEventTypesListMarkup = (data) => {
-    const itemsMarkup = data
+  const generateEventTypesListMarkup = () => {
+    const itemsMarkup = offersData
       .map((eventType) => {
-        const isChecked = eventType === type;
+        const isChecked = eventType.type === type;
 
         return (`
           <div class="event__type-item">
-            <input id="event-type-${eventType}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${eventType}" ${isChecked ? 'checked' : ''}>
-            <label class="event__type-label  event__type-label--${eventType}" for="event-type-${eventType}">${eventType}</label>
+            <input id="event-type-${eventType.type}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${eventType.type}" ${isChecked ? 'checked' : ''}>
+            <label class="event__type-label  event__type-label--${eventType.type}" for="event-type-${eventType.type}">${eventType.type}</label>
           </div>
         `);
       })
@@ -135,7 +133,7 @@ const createEventEditFormTemplate = (event, offersData, destinationsData, offers
           </label>
           <input class="event__type-toggle  visually-hidden" id="event-type-toggle-${id}" type="checkbox">
 
-          ${generateEventTypesListMarkup(eventTypes)}
+          ${generateEventTypesListMarkup()}
         </div>
 
         <div class="event__field-group  event__field-group--destination">
@@ -168,7 +166,7 @@ const createEventEditFormTemplate = (event, offersData, destinationsData, offers
         ${mode === EventEditViewMode.EDIT ? '<button class="event__rollup-btn" type="button"><span class="visually-hidden">Open event</span></button>' : ''}
       </header>
       <section class="event__details">
-        ${generateOffersSection(currentOffers)}
+        ${generateOffersSection()}
         ${generateDestinationSection(pictures)}
       </section>
     </form>`
@@ -178,20 +176,16 @@ const createEventEditFormTemplate = (event, offersData, destinationsData, offers
 export default class EventEditView extends AbstractStatefulView {
   #offers = null;
   #destinations = null;
-  #offersByType = null;
   #mode = null;
 
   #datepickerFrom = null;
   #datepickerTo = null;
 
-  #saveBtnElement = null;
-
-  constructor(event, offers, destinations, offersByType, mode) {
+  constructor(event, offers, destinations, mode) {
     super();
     this._state = EventEditView.parseEventToState(event);
     this.#offers = offers;
     this.#destinations = destinations;
-    this.#offersByType = offersByType;
     this.#mode = mode;
 
     this.#setInnerHandlers();
@@ -200,7 +194,7 @@ export default class EventEditView extends AbstractStatefulView {
   }
 
   get template() {
-    return createEventEditFormTemplate(this._state, this.#offers, this.#destinations, this.#offersByType, this.#mode);
+    return createEventEditFormTemplate(this._state, this.#offers, this.#destinations, this.#mode);
   }
 
   removeElement = () => {
@@ -285,6 +279,7 @@ export default class EventEditView extends AbstractStatefulView {
   #eventTypeChangeHandler = ({ target }) => {
     this.updateElement({
       type: target.value,
+      offers: [],
     });
   };
 

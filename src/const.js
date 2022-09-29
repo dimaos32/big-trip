@@ -41,6 +41,20 @@ const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+  INIT: 'INIT',
 };
 
-export { EventEditViewMode, FilterType, SORT_TYPES, Message, SortType, UserAction, UpdateType };
+const AUTHORIZATION = 'Basic v67oswmcia7yoyx6';
+const END_POINT = 'https://18.ecmascript.pages.academy/big-trip';
+
+export {
+  EventEditViewMode,
+  FilterType,
+  SORT_TYPES,
+  Message,
+  SortType,
+  UserAction,
+  UpdateType,
+  AUTHORIZATION,
+  END_POINT,
+};
