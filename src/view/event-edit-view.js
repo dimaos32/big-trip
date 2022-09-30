@@ -8,7 +8,7 @@ import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
 const createEventEditFormTemplate = (event, offersData, destinationsData, mode) => {
-  const { basePrice, destination, id, offers, type } = event;
+  const { basePrice, destination, id, offers, type, isDisabled, isSaving, isDeleting, isSubmitDisabled} = event;
 
   const currentDestination = destinationsData.find((el) => (el.id === destination));
   const description = currentDestination ? currentDestination.description : '';
@@ -34,6 +34,7 @@ const createEventEditFormTemplate = (event, offersData, destinationsData, mode) 
               type="checkbox"
               name="event-offer-${title.replace(/\s/g, '-').toLowerCase()}"
               ${isChecked ? 'checked' : ''}
+              ${isDisabled ? 'disabled' : ''}
             >
             <label class="event__offer-label" for="${id}-${offerId}">
               <span class="event__offer-title">${title}</span>
@@ -129,7 +130,12 @@ const createEventEditFormTemplate = (event, offersData, destinationsData, mode) 
             <span class="visually-hidden">Choose event type</span>
             <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
           </label>
-          <input class="event__type-toggle  visually-hidden" id="event-type-toggle-${id}" type="checkbox">
+          <input
+            class="event__type-toggle visually-hidden"
+            id="event-type-toggle-${id}"
+            type="checkbox"
+            ${isDisabled ? 'disabled' : ''}
+          >
 
           ${generateEventTypesListMarkup()}
         </div>
@@ -138,16 +144,36 @@ const createEventEditFormTemplate = (event, offersData, destinationsData, mode) 
           <label class="event__label  event__type-output" for="event-destination-${id}">
             ${type[0].toUpperCase()}${type.slice(1)}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-${id}" type="text" name="event-destination" value="${he.encode(name)}" list="destination-list-${id}">
+          <input
+            class="event__input  event__input--destination"
+            id="event-destination-${id}"
+            type="text"
+            name="event-destination"
+            value="${he.encode(name)}"
+            list="destination-list-${id}"
+            ${isDisabled ? 'disabled' : ''}
+          >
           ${generateEventDestinationOptions()}
         </div>
 
         <div class="event__field-group  event__field-group--time">
           <label class="visually-hidden" for="event-start-time-${id}">From</label>
-          <input class="event__input  event__input--time" id="event-start-time-${id}" type="text" name="event-start-time">
+          <input
+            class="event__input event__input--time"
+            id="event-start-time-${id}"
+            type="text"
+            name="event-start-time"
+            ${isDisabled ? 'disabled' : ''}
+          >
           &mdash;
           <label class="visually-hidden" for="event-end-time-${id}">To</label>
-          <input class="event__input  event__input--time" id="event-end-time-${id}" type="text" name="event-end-time">
+          <input
+            class="event__input event__input--time"
+            id="event-end-time-${id}"
+            type="text"
+            name="event-end-time"
+            ${isDisabled ? 'disabled' : ''}
+          >
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -155,12 +181,29 @@ const createEventEditFormTemplate = (event, offersData, destinationsData, mode) 
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-${id}" type="number" name="event-price" value="${basePrice}">
+          <input
+            class="event__input event__input--price"
+            id="event-price-${id}"
+            type="number"
+            name="event-price"
+            value="${basePrice}"
+            ${isDisabled ? 'disabled' : ''}
+          >
         </div>
 
-        <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        ${mode === EventEditViewMode.ADD ? '<button class="event__reset-btn" type="reset">Cancel</button>' : ''}
-        ${mode === EventEditViewMode.EDIT ? '<button class="event__delete-btn" type="button">Delete</button>' : ''}
+        <button
+          class="event__save-btn btn btn--blue"
+          type="submit"
+          ${isDisabled || isSubmitDisabled ? 'disabled' : ''}
+        >
+          ${isSaving ? 'saving...' : 'save'}
+        </button>
+        ${mode === EventEditViewMode.ADD ? '<button class="event__reset-btn  btn" type="reset">Cancel</button>' : ''}
+        ${mode === EventEditViewMode.EDIT ? `<button
+          class="event__delete-btn btn"
+          type="button"
+          ${isDisabled ? 'disabled' : ''}
+        >${isDeleting ? 'deleting...' : 'delete'}</button>` : ''}
         ${mode === EventEditViewMode.EDIT ? '<button class="event__rollup-btn" type="button"><span class="visually-hidden">Open event</span></button>' : ''}
       </header>
       <section class="event__details">
@@ -175,7 +218,6 @@ export default class EventEditView extends AbstractStatefulView {
   #offers = null;
   #destinations = null;
   #mode = null;
-  #isValid = true;
 
   #datepickerFrom = null;
   #datepickerTo = null;
@@ -367,15 +409,28 @@ export default class EventEditView extends AbstractStatefulView {
     const priceElement = this.element.querySelector('.event__input--price');
     const saveBtnElement = this.element.querySelector('.event__save-btn');
 
-    saveBtnElement.disabled = (!destinationElement.value || Number(priceElement.value) <= 0);
+    this._setState({
+      isSubmitDisabled: (!destinationElement.value || Number(priceElement.value) <= 0),
+    });
+
+    saveBtnElement.disabled = this._state.isDisabled || this._state.isSubmitDisabled;
   };
 
   static parseEventToState = (event) => ({
     ...event,
+    isDisabled: false,
+    isSaving: false,
+    isDeleting: false,
+    isSubmitDisabled: false,
   });
 
   static parseStateToEvent = (state) => {
     const event = {...state};
+
+    delete event.isDisabled;
+    delete event.isSaving;
+    delete event.isDeleting;
+    delete event.isSubmitDisabled;
 
     return event;
   };

@@ -47,6 +47,11 @@ const UpdateType = {
 const AUTHORIZATION = 'Basic v67oswmcia7yoyx6';
 const END_POINT = 'https://18.ecmascript.pages.academy/big-trip';
 
+const TimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
+
 export {
   EventEditViewMode,
   FilterType,
@@ -57,4 +62,5 @@ export {
   UpdateType,
   AUTHORIZATION,
   END_POINT,
+  TimeLimit
 };

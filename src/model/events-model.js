@@ -38,8 +38,6 @@ export default class EventsModel extends Observable {
       this.#offers = [];
     }
 
-    console.log(this.#events);
-
     this._notify(UpdateType.INIT);
   };
 

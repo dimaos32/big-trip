@@ -70,6 +70,25 @@ export default class EventNewPresenter {
     this.#eventEditComponent = null;
   };
 
+  setSaving = () => {
+    this.#eventEditComponent.updateElement({
+      isDisabled: true,
+      isSaving: true,
+    });
+  };
+
+  setAborting = () => {
+    const resetFormState = () => {
+      this.#eventEditComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#eventEditComponent.shake(resetFormState);
+  };
+
   #escKeyDownHandler = (evt) => {
     if (isEscEvent(evt)) {
       evt.preventDefault();
@@ -87,6 +106,5 @@ export default class EventNewPresenter {
       UpdateType.MAJOR,
       event,
     );
-    this.destroy();
   };
 }
