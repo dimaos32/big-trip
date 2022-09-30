@@ -95,7 +95,7 @@ export default class EventsPresenter {
         this.#eventPresenter.get(update.id).setSaving();
 
         try {
-          this.#eventsModel.updateEvent(updateType, update);
+          await this.#eventsModel.updateEvent(updateType, update);
         } catch(err) {
           this.#eventPresenter.get(update.id).setAborting();
         }
@@ -103,12 +103,12 @@ export default class EventsPresenter {
         break;
 
       case UserAction.ADD_EVENT:
-        this.#eventPresenter.setSaving();
+        this.#eventNewPresenter.setSaving();
 
         try {
-          this.#eventsModel.addEvent(updateType, update);
+          await this.#eventsModel.addEvent(updateType, update);
         } catch(err) {
-          this.#eventPresenter.setAborting();
+          this.#eventNewPresenter.setAborting();
         }
 
         break;
@@ -117,7 +117,7 @@ export default class EventsPresenter {
         this.#eventPresenter.get(update.id).setDeleting();
 
         try {
-          this.#eventsModel.removeEvent(updateType, update);
+          await this.#eventsModel.removeEvent(updateType, update);
         } catch(err) {
           this.#eventPresenter.get(update.id).setAborting();
         }
@@ -125,7 +125,7 @@ export default class EventsPresenter {
         break;
 
       default:
-        throw new Error('Неизвестное пользовательское действие');
+        throw new Error('Unknown user action');
     }
 
     this.#uiBlocker.unblock();
@@ -150,7 +150,7 @@ export default class EventsPresenter {
         this.#renderEventsBoard();
         break;
       default:
-        throw new Error('Неизвестный тип обновления');
+        throw new Error('Unknown update type');
     }
   };
 

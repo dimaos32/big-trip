@@ -45,7 +45,7 @@ export default class EventsModel extends Observable {
     const index = this.#events.findIndex((event) => event.id === update.id);
 
     if (index === -1) {
-      throw new Error('Невозможно обновить несуществующее событие');
+      throw new Error('Can\'t update unexisting event');
     }
 
     try {
@@ -86,8 +86,6 @@ export default class EventsModel extends Observable {
       ...this.#events.slice(0, index),
       ...this.#events.slice(index + 1),
     ];
-
-    this._notify(updateType);
 
     try {
       await this.#eventsApiService.deleteEvent(update);
