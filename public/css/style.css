@@ -802,6 +802,10 @@ main {
   .event__offer-label::first-letter {
     text-transform: capitalize; }
 
+.event__offer-checkbox:disabled + .event__offer-label {
+  pointer-events: none;
+}
+
 .event__offer-checkbox:checked + .event__offer-label {
   background-color: #0d8ae4; }
 

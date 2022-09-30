@@ -1,6 +1,7 @@
 import { RenderPosition, render, remove } from '../framework/render';
+import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 
-import { FilterType, SortType, UpdateType, UserAction } from '../const';
+import { FilterType, SortType, UpdateType, UserAction, TimeLimit } from '../const';
 
 import { sortByDate, sortByTime, sortByPrice } from '../utils/event';
 import { filter } from '../utils/filter';
@@ -31,6 +32,7 @@ export default class EventsPresenter {
   #eventPresenter = new Map();
   #eventNewPresenter = null;
   #isLoading = true;
+  #uiBlocker = new UiBlocker(TimeLimit.LOWER_LIMIT, TimeLimit.UPPER_LIMIT);
 
   constructor(filterContainer, eventsContainer, filterModel, eventsModel) {
     this.#filterContainer = filterContainer;
@@ -85,20 +87,48 @@ export default class EventsPresenter {
     this.#eventPresenter.forEach((presenter) => presenter.resetView());
   };
 
-  #handleViewAction = (actionType, updateType, update) => {
+  #handleViewAction = async (actionType, updateType, update) => {
+    this.#uiBlocker.block();
+
     switch (actionType) {
       case UserAction.UPDATE_EVENT:
-        this.#eventsModel.updateEvent(updateType, update);
+        this.#eventPresenter.get(update.id).setSaving();
+
+        try {
+          await this.#eventsModel.updateEvent(updateType, update);
+        } catch(err) {
+          this.#eventPresenter.get(update.id).setAborting();
+        }
+
         break;
+
       case UserAction.ADD_EVENT:
-        this.#eventsModel.addEvent(updateType, update);
+        this.#eventNewPresenter.setSaving();
+
+        try {
+          await this.#eventsModel.addEvent(updateType, update);
+        } catch(err) {
+          this.#eventNewPresenter.setAborting();
+        }
+
         break;
+
       case UserAction.REMOVE_EVENT:
-        this.#eventsModel.removeEvent(updateType, update);
+        this.#eventPresenter.get(update.id).setDeleting();
+
+        try {
+          await this.#eventsModel.removeEvent(updateType, update);
+        } catch(err) {
+          this.#eventPresenter.get(update.id).setAborting();
+        }
+
         break;
+
       default:
-        throw new Error('Неизвестное пользовательское действие');
+        throw new Error('Unknown user action');
     }
+
+    this.#uiBlocker.unblock();
   };
 
   #handleModelEvent = (updateType, data) => {
@@ -120,7 +150,7 @@ export default class EventsPresenter {
         this.#renderEventsBoard();
         break;
       default:
-        throw new Error('Неизвестный тип обновления');
+        throw new Error('Unknown update type');
     }
   };
 
