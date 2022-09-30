@@ -2,10 +2,20 @@ import he from 'he';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import dayjs from 'dayjs';
 
-import { EventEditViewMode } from '../const';
+import { EventEditViewMode, BtnActiveValue } from '../const';
 
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
+
+const getBtnValue = (isActive, value) => {
+  const target = Object.keys(BtnActiveValue).find((el) => el === value);
+
+  if (target) {
+    return isActive ? `${BtnActiveValue[target]}...` : target;
+  }
+
+  return value;
+};
 
 const createEventEditFormTemplate = (event, offersData, destinationsData, mode) => {
   const { basePrice, destination, id, offers, type, isDisabled, isSaving, isDeleting, isSubmitDisabled} = event;
@@ -196,14 +206,14 @@ const createEventEditFormTemplate = (event, offersData, destinationsData, mode) 
           type="submit"
           ${isDisabled || isSubmitDisabled ? 'disabled' : ''}
         >
-          ${isSaving ? 'saving...' : 'save'}
+          ${getBtnValue(isSaving, 'Save')}
         </button>
         ${mode === EventEditViewMode.ADD ? '<button class="event__reset-btn  btn" type="reset">Cancel</button>' : ''}
         ${mode === EventEditViewMode.EDIT ? `<button
           class="event__delete-btn btn"
           type="button"
           ${isDisabled ? 'disabled' : ''}
-        >${isDeleting ? 'deleting...' : 'delete'}</button>` : ''}
+        >${getBtnValue(isDeleting, 'Delete')}</button>` : ''}
         ${mode === EventEditViewMode.EDIT ? '<button class="event__rollup-btn" type="button"><span class="visually-hidden">Open event</span></button>' : ''}
       </header>
       <section class="event__details">

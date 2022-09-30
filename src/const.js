@@ -52,6 +52,11 @@ const TimeLimit = {
   UPPER_LIMIT: 1000,
 };
 
+const BtnActiveValue = {
+  'Save': 'Saving',
+  'Delete': 'Deleting',
+};
+
 export {
   EventEditViewMode,
   FilterType,
@@ -62,5 +67,6 @@ export {
   UpdateType,
   AUTHORIZATION,
   END_POINT,
-  TimeLimit
+  TimeLimit,
+  BtnActiveValue,
 };
