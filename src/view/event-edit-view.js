@@ -242,7 +242,6 @@ export default class EventEditView extends AbstractStatefulView {
     this.#setInnerHandlers();
     this.#setDatepickers();
     this.#setSaveBtnState();
-    this.#updateTotalPrice();
   }
 
   get template() {
@@ -275,20 +274,6 @@ export default class EventEditView extends AbstractStatefulView {
     this.setDeleteEventHandler(this._callback.deleteClick);
     this.setCancelEditClickHandler(this._callback.click);
     this.setFormSubmitHandler(this._callback.formSubmit);
-  };
-
-  #updateTotalPrice = () => {
-    const currentOffers = this.#offers.find((el) => el.type === this._state.type).offers;
-
-    const rr = this._state.offers.reduce((acc, offer) => {
-      const currentOfferPrice = currentOffers.find((el) => el.id === offer).price;
-
-      return acc + currentOfferPrice;
-    }, this._state.basePrice);
-
-    this._setState({
-      totalPrice: rr,
-    });
   };
 
   setDeleteEventHandler = (callback) => {
@@ -447,7 +432,6 @@ export default class EventEditView extends AbstractStatefulView {
     isSaving: false,
     isDeleting: false,
     isSubmitDisabled: false,
-    totalPrice: 0,
   });
 
   static parseStateToEvent = (state) => {
@@ -457,7 +441,6 @@ export default class EventEditView extends AbstractStatefulView {
     delete event.isSaving;
     delete event.isDeleting;
     delete event.isSubmitDisabled;
-    delete event.totalPrice;
 
     return event;
   };
