@@ -24,6 +24,21 @@ export default class EventsModel extends Observable {
     return this.#offers;
   }
 
+  get tripPrice() {
+    const eventTotalPrices = this.#events.map((event) => {
+      const { type, offers } = event;
+      const currentOffers = this.#offers.find((el) => el.type === type).offers;
+
+      return offers.reduce((acc, offer) => {
+        const currentOfferPrice = currentOffers.find((el) => el.id === offer).price;
+
+        return acc + currentOfferPrice;
+      }, event.basePrice);
+    });
+
+    return eventTotalPrices.reduce((acc, item) => acc + item, 0);
+  }
+
   init = async () => {
     try {
       const events = await this.#eventsApiService.events;
