@@ -44,7 +44,7 @@ const UpdateType = {
   INIT: 'INIT',
 };
 
-const AUTHORIZATION = 'Basic v67oswmcia7yoyx6';
+const AUTHORIZATION = 'Basic v67s2upmcia7u8yx6';
 const END_POINT = 'https://18.ecmascript.pages.academy/big-trip';
 
 const TimeLimit = {

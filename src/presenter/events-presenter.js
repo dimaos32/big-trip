@@ -6,6 +6,7 @@ import { FilterType, SortType, UpdateType, UserAction, TimeLimit } from '../cons
 import { sortByDate, sortByTime, sortByPrice } from '../utils/event';
 import { filter } from '../utils/filter';
 
+import TripInfoPresenter from './trip-info-presenter.js';
 import FilterPresenter from '../presenter/filter-presenter.js';
 import SortView from '../view/sort-view';
 import EventsListView from '../view/events-list-view';
@@ -15,12 +16,14 @@ import EventPresenter from './event-presenter';
 import EventNewPresenter from './event-new-presenter';
 
 export default class EventsPresenter {
+  #tripInfoContainer = null;
   #filterContainer = null;
   #eventsContainer = null;
 
   #filterModel = null;
   #eventsModel = null;
 
+  #TripInfoPresenter = null;
   #filterPresenter = null;
   #sortComponent = null;
   #eventsComponent = new EventsListView();
@@ -34,11 +37,13 @@ export default class EventsPresenter {
   #isLoading = true;
   #uiBlocker = new UiBlocker(TimeLimit.LOWER_LIMIT, TimeLimit.UPPER_LIMIT);
 
-  constructor(filterContainer, eventsContainer, filterModel, eventsModel) {
+  constructor(tripInfoContainer, filterContainer, eventsContainer, filterModel, eventsModel) {
+    this.#tripInfoContainer = tripInfoContainer;
     this.#filterContainer = filterContainer;
     this.#eventsContainer = eventsContainer;
     this.#filterModel = filterModel;
     this.#eventsModel = eventsModel;
+    this.#TripInfoPresenter = new TripInfoPresenter(this.#tripInfoContainer, this.#eventsModel);
     this.#filterPresenter = new FilterPresenter(this.#filterContainer, this.#filterModel, this.#eventsModel);
 
     this.#eventsModel.addObserver(this.#handleModelEvent);
@@ -63,6 +68,7 @@ export default class EventsPresenter {
   }
 
   init = () => {
+    this.#renderTripInfo();
     this.#renderFilter();
     this.#renderEventsBoard();
   };
@@ -155,9 +161,13 @@ export default class EventsPresenter {
   };
 
   #handleSortTypeChange = (sortType) => {
-    this.#currentSortType = sortType;
     this.#clearEventsBoard();
+    this.#currentSortType = sortType;
     this.#renderEventsBoard();
+  };
+
+  #renderTripInfo = () => {
+    this.#TripInfoPresenter.init();
   };
 
   #renderFilter = () => {
