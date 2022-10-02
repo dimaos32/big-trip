@@ -16,7 +16,7 @@ const tripEventsElement = siteMainElement.querySelector('.trip-events');
 const newEventButtonComponent = new NewEventButtonView();
 const filterModel = new FilterModel();
 const eventsModel = new EventsModel(new EventsApiService(END_POINT, AUTHORIZATION));
-const eventsPresenter = new EventsPresenter(tripFilterElement, tripEventsElement, filterModel, eventsModel);
+const eventsPresenter = new EventsPresenter(tripMainElement, tripFilterElement, tripEventsElement, filterModel, eventsModel);
 
 const handleNewEventFormClose = () => {
   newEventButtonComponent.element.disabled = false;
