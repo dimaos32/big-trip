@@ -143,7 +143,7 @@ export default class EventsPresenter {
         this.#eventPresenter.get(data.id).init(data);
         break;
       case UpdateType.MINOR:
-        this.#clearEventsBoard();
+        this.#clearEventsBoard(false);
         this.#renderEventsBoard();
         break;
       case UpdateType.MAJOR:
@@ -222,7 +222,7 @@ export default class EventsPresenter {
     this.#renderEvents();
   };
 
-  #clearEventsBoard = () => {
+  #clearEventsBoard = (needResetSortType = true) => {
     if (this.#eventNewPresenter) {
       this.#eventNewPresenter.destroy();
     }
@@ -237,6 +237,8 @@ export default class EventsPresenter {
       remove(this.#noEventsComponent);
     }
 
-    this.#currentSortType = SortType.DATE_UP;
+    if (needResetSortType) {
+      this.#currentSortType = SortType.DATE_UP;
+    }
   };
 }
