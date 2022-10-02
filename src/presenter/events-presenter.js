@@ -23,7 +23,7 @@ export default class EventsPresenter {
   #filterModel = null;
   #eventsModel = null;
 
-  #TripInfoPresenter = null;
+  #tripInfoPresenter = null;
   #filterPresenter = null;
   #sortComponent = null;
   #eventsComponent = new EventsListView();
@@ -43,7 +43,7 @@ export default class EventsPresenter {
     this.#eventsContainer = eventsContainer;
     this.#filterModel = filterModel;
     this.#eventsModel = eventsModel;
-    this.#TripInfoPresenter = new TripInfoPresenter(this.#tripInfoContainer, this.#eventsModel);
+    this.#tripInfoPresenter = new TripInfoPresenter(this.#tripInfoContainer, this.#eventsModel);
     this.#filterPresenter = new FilterPresenter(this.#filterContainer, this.#filterModel, this.#eventsModel);
 
     this.#eventsModel.addObserver(this.#handleModelEvent);
@@ -167,7 +167,7 @@ export default class EventsPresenter {
   };
 
   #renderTripInfo = () => {
-    this.#TripInfoPresenter.init();
+    this.#tripInfoPresenter.init();
   };
 
   #renderFilter = () => {
