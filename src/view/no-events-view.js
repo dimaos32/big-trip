@@ -7,7 +7,7 @@ const createNoEventsTemplate = (filterType) => {
   return `<p class="trip-events__msg">${noEventsMessage}</p>`;
 };
 
-export default class EventView extends AbstractView {
+export default class NoEventsView extends AbstractView {
   #filterType = null;
 
   constructor(filterType) {

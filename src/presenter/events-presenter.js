@@ -10,7 +10,7 @@ import TripInfoPresenter from './trip-info-presenter.js';
 import FilterPresenter from '../presenter/filter-presenter.js';
 import SortView from '../view/sort-view';
 import EventsListView from '../view/events-list-view';
-import noEventsView from '../view/no-events-view';
+import NoEventsView from '../view/no-events-view';
 import LoadingView from '../view/loading-view.js';
 import EventPresenter from './event-presenter';
 import EventNewPresenter from './event-new-presenter';
@@ -198,7 +198,7 @@ export default class EventsPresenter {
   };
 
   #renderNoEvents = () => {
-    this.#noEventsComponent = new noEventsView(this.#currentFilterType);
+    this.#noEventsComponent = new NoEventsView(this.#currentFilterType);
     render(this.#noEventsComponent, this.#eventsContainer);
   };
 
